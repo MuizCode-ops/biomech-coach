@@ -1,0 +1,71 @@
+# Product Requirements Document: Biomechanical Form Tracker & Virtual Coach
+
+This Product Requirements Document (PRD) outlines the development of a real-time, Edge AI-driven mobile application designed to assist powerlifters in mastering competition-grade biomechanics for the Squat, Bench Press, and Deadlift[cite: 1].
+
+---
+
+ 1. Product Vision & Problem Statement
+
+Vision
+To democratize elite-level coaching by providing a "tournament-grade" training tool that uses on-device artificial intelligence to ensure safety and competition legality without the need for expensive hardware or cloud connectivity[cite: 1].
+
+### Problem Statement
+Complexity of Standards: Lifters often struggle to self-assess precise competition requirements, such as hip crease depth or lockout completion, leading to disqualified lifts[cite: 1].
+Cloud Latency: Existing AI fitness tools often rely on cloud processing, which introduces delays that make real-time, life-saving postural feedback during a heavy lift impossible.
+Subjective Logging: Manual training journals are often inaccurate, as lifters may record "half-reps" or poor-form repetitions as successful volume.
+
+---
+
+2. Target Audience
+*   Aspiring Olympic weightlifters
+*   Competitive powerlifters.
+*   Elite strength athletes seeking objective form validation.
+
+---
+
+3. Functional Requirements
+
+3.1 Real-Time Pose Estimation
+Edge AI Processing: Utilize Google ML Kit’s Pose Detection to extract 33 skeletal landmarks directly on the mobile device.
+Zero-Latency Analysis: Process video frames locally to bypass cloud delays, ensuring immediate feedback.
+Live Overlay: Provide a camera interface that maps the user's skeleton over the live feed in real-time.
+
+ 3.2 Biomechanical Decision Engine
+Kinematic Calculations: Use Dart-based trigonometric algorithms (specifically `atan2`) to calculate dynamic joint angles, such as knee flexion, hip hinge, and elbow extension[cite: 1].
+*   **State-Machine Logic:** Implement a deterministic state machine calibrated to international powerlifting thresholds to verify depth and lockout[cite: 1].
+*   **Automated Rep Counting:** Mathematically verify and count only repetitions that meet pre-defined competition standards[cite: 1].
+
+### 3.3 Virtual Coaching & Feedback
+*   **Mid-Rep Audio Cues:** Trigger Text-to-Speech (TTS) warnings immediately (e.g., "Back rounding!" or "Deeper!") if posture becomes dangerous or insufficient[cite: 1].
+*   **Visual Indicators:** Provide immediate on-screen feedback regarding the validity of a lift[cite: 1].
+
+### 3.4 Objective Training Journal
+*   **Local Database:** Implement a lightweight backend using SQLite or Hive for on-device storage[cite: 1].
+*   **Automated Logging:** Strictly filter and log only "Valid" repetitions and historical form scores[cite: 1].
+*   **Data Privacy:** Maintain all training data locally on device memory to ensure user privacy[cite: 1].
+
+---
+
+## 4. Technical Specifications
+
+| Component | Technology |
+| :--- | :--- |
+| **Framework** | Flutter SDK (Cross-platform Android/iOS)[cite: 1] |
+| **AI Engine** | Google ML Kit Pose Detection (33 Landmarks)[cite: 1] |
+| **Logic Language** | Dart (utilizing `atan2` for joint angles)[cite: 1] |
+| **Local Database** | SQLite or Hive[cite: 1] |
+| **Input Source** | Real-time RGB video (Front or Rear Camera)[cite: 1] |
+
+---
+
+## 5. Constraints & Limitations
+*   **Optical Tracking Limits:** The system is limited to 2D tracking from a single camera source[cite: 1].
+*   **Environment Requirements:** Requires a well-lit environment and an unobstructed line of sight to the athlete[cite: 1].
+*   **Visual Occlusion:** Accuracy may degrade if joint landmarks are obscured by large bumper plates, baggy clothing, or other individuals in the frame[cite: 1].
+
+---
+
+## 6. Expected Outcomes
+1.  **The Powerlifting Tracker:** A mobile app that mathematically verifies competition-grade depth and lockout standards[cite: 1].
+2.  **The Zero-Latency Audio Coach:** An offline-capable system providing millisecond-responsive vocal cues[cite: 1].
+3.  **The Objective Logbook:** An automated journal that ensures recorded training volume is limited to competition-legal repetitions[cite: 1].
