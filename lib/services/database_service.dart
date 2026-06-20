@@ -65,6 +65,10 @@ class DatabaseService {
   int get totalValidReps =>
       _sessions.values.fold(0, (sum, s) => sum + s.validReps);
 
+  /// Calculate total invalid (bad form) reps across all sessions.
+  int get totalInvalidReps =>
+      _sessions.values.fold(0, (sum, s) => sum + s.invalidReps);
+
   /// Calculate average form score across all sessions.
   double get overallAverageFormScore {
     final sessions = _sessions.values.toList();

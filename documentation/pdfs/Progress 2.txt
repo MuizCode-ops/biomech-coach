@@ -1,0 +1,1 @@
+Completed the demo system: tracks squats, bench, and deadlifts. implemented the offline Hive database, JSON backup system, and Text-to-Speech coaching. I also completed usability and FPS benchmarking on physical devices, compiled the release APK,

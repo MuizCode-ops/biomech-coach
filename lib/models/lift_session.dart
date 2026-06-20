@@ -47,4 +47,20 @@ class LiftSession extends HiveObject {
     final secs = sessionDuration.inSeconds % 60;
     return '${mins}m ${secs}s';
   }
+
+  Map<String, dynamic> toJson() => {
+        'startTime': startTime.toIso8601String(),
+        'liftType': liftType,
+        'reps': reps.map((r) => r.toJson()).toList(),
+        'endTime': endTime.toIso8601String(),
+      };
+
+  factory LiftSession.fromJson(Map<String, dynamic> json) => LiftSession(
+        startTime: DateTime.parse(json['startTime'] as String),
+        liftType: json['liftType'] as String,
+        reps: (json['reps'] as List)
+            .map((r) => RepRecord.fromJson(r as Map<String, dynamic>))
+            .toList(),
+        endTime: DateTime.parse(json['endTime'] as String),
+      );
 }

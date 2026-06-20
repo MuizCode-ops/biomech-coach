@@ -38,31 +38,70 @@ class BiomechanicsEngine {
   }
 
   // ──────────────────────────────────────────
+  //  Dynamic Side Selection
+  // ──────────────────────────────────────────
+
+  /// Determine the most visible side ('left' or 'right') based on average likelihood.
+  static String getMostVisibleSide(Map<PoseLandmarkType, PoseLandmark> lm) {
+    final leftShoulder = lm[PoseLandmarkType.leftShoulder];
+    final leftHip = lm[PoseLandmarkType.leftHip];
+    final leftKnee = lm[PoseLandmarkType.leftKnee];
+    final leftAnkle = lm[PoseLandmarkType.leftAnkle];
+
+    final rightShoulder = lm[PoseLandmarkType.rightShoulder];
+    final rightHip = lm[PoseLandmarkType.rightHip];
+    final rightKnee = lm[PoseLandmarkType.rightKnee];
+    final rightAnkle = lm[PoseLandmarkType.rightAnkle];
+
+    double leftConf = 0.0;
+    int leftCount = 0;
+    if (leftShoulder != null) { leftConf += leftShoulder.likelihood; leftCount++; }
+    if (leftHip != null) { leftConf += leftHip.likelihood; leftCount++; }
+    if (leftKnee != null) { leftConf += leftKnee.likelihood; leftCount++; }
+    if (leftAnkle != null) { leftConf += leftAnkle.likelihood; leftCount++; }
+
+    double rightConf = 0.0;
+    int rightCount = 0;
+    if (rightShoulder != null) { rightConf += rightShoulder.likelihood; rightCount++; }
+    if (rightHip != null) { rightConf += rightHip.likelihood; rightCount++; }
+    if (rightKnee != null) { rightConf += rightKnee.likelihood; rightCount++; }
+    if (rightAnkle != null) { rightConf += rightAnkle.likelihood; rightCount++; }
+
+    final leftAvg = leftCount > 0 ? leftConf / leftCount : 0.0;
+    final rightAvg = rightCount > 0 ? rightConf / rightCount : 0.0;
+
+    return leftAvg >= rightAvg ? 'left' : 'right';
+  }
+
+  // ──────────────────────────────────────────
   //  SQUAT angles
   // ──────────────────────────────────────────
 
   /// Knee flexion angle (hip → knee → ankle)
   static double squatKneeAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final hip = lm[PoseLandmarkType.leftHip];
-    final knee = lm[PoseLandmarkType.leftKnee];
-    final ankle = lm[PoseLandmarkType.leftAnkle];
+    final side = getMostVisibleSide(lm);
+    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
+    final knee = lm[side == 'left' ? PoseLandmarkType.leftKnee : PoseLandmarkType.rightKnee];
+    final ankle = lm[side == 'left' ? PoseLandmarkType.leftAnkle : PoseLandmarkType.rightAnkle];
     if (hip == null || knee == null || ankle == null) return 180.0;
     return calculateAngle(hip, knee, ankle);
   }
 
   /// Hip flexion angle (shoulder → hip → knee)
   static double squatHipAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final shoulder = lm[PoseLandmarkType.leftShoulder];
-    final hip = lm[PoseLandmarkType.leftHip];
-    final knee = lm[PoseLandmarkType.leftKnee];
+    final side = getMostVisibleSide(lm);
+    final shoulder = lm[side == 'left' ? PoseLandmarkType.leftShoulder : PoseLandmarkType.rightShoulder];
+    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
+    final knee = lm[side == 'left' ? PoseLandmarkType.leftKnee : PoseLandmarkType.rightKnee];
     if (shoulder == null || hip == null || knee == null) return 180.0;
     return calculateAngle(shoulder, hip, knee);
   }
 
   /// Torso lean angle relative to vertical (0 = upright, 90 = horizontal)
   static double squatTorsoLean(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final shoulder = lm[PoseLandmarkType.leftShoulder];
-    final hip = lm[PoseLandmarkType.leftHip];
+    final side = getMostVisibleSide(lm);
+    final shoulder = lm[side == 'left' ? PoseLandmarkType.leftShoulder : PoseLandmarkType.rightShoulder];
+    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
     if (shoulder == null || hip == null) return 0.0;
     final dx = (shoulder.x - hip.x).abs();
     final dy = (hip.y - shoulder.y).abs();
@@ -103,26 +142,29 @@ class BiomechanicsEngine {
 
   /// Hip hinge angle (shoulder → hip → knee)
   static double deadliftHipAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final shoulder = lm[PoseLandmarkType.leftShoulder];
-    final hip = lm[PoseLandmarkType.leftHip];
-    final knee = lm[PoseLandmarkType.leftKnee];
+    final side = getMostVisibleSide(lm);
+    final shoulder = lm[side == 'left' ? PoseLandmarkType.leftShoulder : PoseLandmarkType.rightShoulder];
+    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
+    final knee = lm[side == 'left' ? PoseLandmarkType.leftKnee : PoseLandmarkType.rightKnee];
     if (shoulder == null || hip == null || knee == null) return 180.0;
     return calculateAngle(shoulder, hip, knee);
   }
 
   /// Knee extension angle (hip → knee → ankle)
   static double deadliftKneeAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final hip = lm[PoseLandmarkType.leftHip];
-    final knee = lm[PoseLandmarkType.leftKnee];
-    final ankle = lm[PoseLandmarkType.leftAnkle];
+    final side = getMostVisibleSide(lm);
+    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
+    final knee = lm[side == 'left' ? PoseLandmarkType.leftKnee : PoseLandmarkType.rightKnee];
+    final ankle = lm[side == 'left' ? PoseLandmarkType.leftAnkle : PoseLandmarkType.rightAnkle];
     if (hip == null || knee == null || ankle == null) return 180.0;
     return calculateAngle(hip, knee, ankle);
   }
 
   /// Back rounding approximated by mid-spine angle deviation
   static double deadliftBackAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final shoulder = lm[PoseLandmarkType.leftShoulder];
-    final hip = lm[PoseLandmarkType.leftHip];
+    final side = getMostVisibleSide(lm);
+    final shoulder = lm[side == 'left' ? PoseLandmarkType.leftShoulder : PoseLandmarkType.rightShoulder];
+    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
     if (shoulder == null || hip == null) return 0.0;
     final dx = (shoulder.x - hip.x).abs();
     final dy = (hip.y - shoulder.y).abs();

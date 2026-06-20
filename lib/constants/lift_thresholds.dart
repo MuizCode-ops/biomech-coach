@@ -37,11 +37,14 @@ class LiftThresholds {
   /// Knee angle at parallel depth
   static const double squatDepthKneeAngle = 90.0;
 
+  /// Hip angle must drop below this to trigger the start of the squat descent
+  static const double squatStartHipAngle = 138.0;
+
   /// Hip angle for lockout (standing tall)
-  static const double squatLockoutHipAngle = 165.0;
+  static const double squatLockoutHipAngle = 145.0;
 
   /// Knee angle for lockout
-  static const double squatLockoutKneeAngle = 165.0;
+  static const double squatLockoutKneeAngle = 145.0;
 
   /// Torso lean threshold — excessive forward lean warning
   static const double squatMaxTorsoLean = 70.0;
@@ -49,11 +52,14 @@ class LiftThresholds {
   // ──────────────────────────────────────────
   //  BENCH PRESS thresholds (degrees)
   // ──────────────────────────────────────────
+  /// Elbow angle must drop below this to start the bench press descent
+  static const double benchStartElbowAngle = 135.0;
+
   /// Elbow angle at bottom (bar to chest) — must be ≤ this
   static const double benchBottomElbowAngle = 90.0;
 
   /// Elbow angle for lockout — must be ≥ this
-  static const double benchLockoutElbowAngle = 160.0;
+  static const double benchLockoutElbowAngle = 140.0;
 
   /// Wrist should track roughly over the elbow
   static const double benchWristAlignmentTolerance = 20.0;
@@ -61,6 +67,9 @@ class LiftThresholds {
   // ──────────────────────────────────────────
   //  DEADLIFT thresholds (degrees)
   // ──────────────────────────────────────────
+  /// Hip angle must drop below this to start the deadlift hinge/descent
+  static const double deadliftStartHipAngle = 138.0;
+
   /// Hip angle at bottom (hinge) — must be ≤ this to start
   static const double deadliftBottomHipAngle = 75.0;
 
@@ -68,10 +77,10 @@ class LiftThresholds {
   static const double deadliftBottomKneeAngle = 110.0;
 
   /// Hip angle for full lockout — must be ≥ this
-  static const double deadliftLockoutHipAngle = 165.0;
+  static const double deadliftLockoutHipAngle = 145.0;
 
   /// Knee angle for full lockout
-  static const double deadliftLockoutKneeAngle = 165.0;
+  static const double deadliftLockoutKneeAngle = 145.0;
 
   /// Max back angle — excessive rounding warning
   static const double deadliftMaxBackRound = 40.0;
@@ -83,7 +92,7 @@ class LiftThresholds {
   static const double minLandmarkConfidence = 0.5;
 
   /// Smoothing window for angle history (frames)
-  static const int smoothingWindow = 5;
+  static const int smoothingWindow = 3;
 }
 
 /// Returns a human-readable description of what each lift phase requires.

@@ -48,4 +48,24 @@ class RepRecord extends HiveObject {
     score -= faults.length * 10.0;
     return score.clamp(0.0, 100.0);
   }
+
+  Map<String, dynamic> toJson() => {
+        'timestamp': timestamp.toIso8601String(),
+        'isValid': isValid,
+        'formScore': formScore,
+        'minDepthAngle': minDepthAngle,
+        'lockoutAngle': lockoutAngle,
+        'faultNotes': faultNotes,
+        'durationSeconds': durationSeconds,
+      };
+
+  factory RepRecord.fromJson(Map<String, dynamic> json) => RepRecord(
+        timestamp: DateTime.parse(json['timestamp'] as String),
+        isValid: json['isValid'] as bool,
+        formScore: (json['formScore'] as num).toDouble(),
+        minDepthAngle: (json['minDepthAngle'] as num).toDouble(),
+        lockoutAngle: (json['lockoutAngle'] as num).toDouble(),
+        faultNotes: List<String>.from(json['faultNotes'] as List),
+        durationSeconds: (json['durationSeconds'] as num).toDouble(),
+      );
 }

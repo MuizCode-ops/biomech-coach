@@ -1,6 +1,6 @@
 workflows:
-  ios-release:
-    name: iOS Release (iPhone)
+  ios-adhoc:
+    name: iOS Ad Hoc (Install on iPhone)
     max_build_duration: 60
     environment:
       flutter: stable
@@ -9,7 +9,7 @@ workflows:
       vars:
         BUNDLE_ID: "com.biomechcoach.app"
       ios_signing:
-        distribution_type: ad_hoc        # Change to 'app_store' for TestFlight
+        distribution_type: ad_hoc
         bundle_identifier: com.biomechcoach.app
 
     triggering:
@@ -20,7 +20,7 @@ workflows:
         include: true
 
     scripts:
-      - name: Set up code signing
+      - name: Register iPhone UDID & fetch signing files
         script: |
           keychain initialize
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
@@ -37,7 +37,7 @@ workflows:
         script: |
           find . -name "Podfile" -execdir pod install \;
 
-      - name: Flutter build iOS
+      - name: Flutter build iOS (Ad Hoc)
         script: |
           flutter build ios --release --no-codesign
           xcode-project build-ipa \
@@ -51,16 +51,22 @@ workflows:
       - flutter_drive.log
 
     publishing:
-      # Uncomment to publish to TestFlight
-      # app_store_connect:
-      #   auth: integration
-      #   submit_to_testflight: true
       email:
         recipients:
-          - your-email@example.com        # <-- change this
+          - muhdmuiz106@gmail.com
         notify:
           success: true
           failure: true
+
+  # ── Uncomment below to also publish to TestFlight later ──
+  # ios-testflight:
+  #   name: iOS TestFlight
+  #   environment:
+  #     ...
+  #   publishing:
+  #     app_store_connect:
+  #       auth: integration
+  #       submit_to_testflight: true
 
   android-debug:
     name: Android Debug (Testing)
@@ -77,3 +83,11 @@ workflows:
 
     artifacts:
       - build/**/outputs/**/*.apk
+    
+    publishing:
+      email:
+        recipients:
+          - muhdmuiz106@gmail.com
+        notify:
+          success: true
+          failure: false

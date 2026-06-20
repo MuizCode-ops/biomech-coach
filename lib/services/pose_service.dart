@@ -49,10 +49,10 @@ class PoseService {
     CameraDescription camera,
     InputImageRotation rotation,
   ) {
-    // iOS uses kCVPixelFormatType_32BGRA, Android uses YUV_420_888
+    // iOS uses kCVPixelFormatType_32BGRA, Android uses nv21
     final format = Platform.isIOS
         ? InputImageFormat.bgra8888
-        : InputImageFormat.yuv_420_888;
+        : InputImageFormat.nv21;
 
     if (image.planes.isEmpty) return null;
 

@@ -41,7 +41,7 @@ class _CameraScreenState extends State<CameraScreen>
 
   // ── State ──────────────────────────────
   List<Pose> _poses = [];
-  late RepStateMachine _stateMachine;
+  RepStateMachine? _stateMachine;
   double _primaryAngle = 180.0;
   double _secondaryAngle = 180.0;
   final List<double> _angleHistory = [];
@@ -73,24 +73,29 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   void _setupStateMachine() {
-    _stateMachine = createStateMachine(widget.liftType);
+    final sm = createStateMachine(widget.liftType);
 
-    _stateMachine.onRepComplete = (result) {
+    sm.onRepComplete = (result) {
       final record = result.toRepRecord();
       setState(() => _sessionReps.add(record));
       _ttsCoach.announceRepResult(
         isValid: result.isValid,
-        validCount: _stateMachine.validRepCount,
+        validCount: sm.validRepCount,
       );
     };
 
-    _stateMachine.onCoachingCue = (cue) {
+    sm.onCoachingCue = (cue) {
       setState(() => _lastFault = cue);
+      _ttsCoach.speak(cue); // Speak the cue audio
       _faultClearTimer?.cancel();
       _faultClearTimer = Timer(const Duration(seconds: 2), () {
         if (mounted) setState(() => _lastFault = null);
       });
     };
+
+    setState(() {
+      _stateMachine = sm;
+    });
   }
 
   Future<void> _initCamera() async {
@@ -177,8 +182,8 @@ class _CameraScreenState extends State<CameraScreen>
       _secondaryAngle = secondary;
     });
 
-    if (_sessionActive) {
-      _stateMachine.update(smoothed, extras);
+    if (_sessionActive && _stateMachine != null) {
+      _stateMachine!.update(smoothed, extras);
     }
   }
 
@@ -188,7 +193,7 @@ class _CameraScreenState extends State<CameraScreen>
       if (_sessionActive) {
         _sessionStart = DateTime.now();
         _sessionReps.clear();
-        _stateMachine.reset();
+        _stateMachine?.reset();
       } else {
         _endSession();
       }
@@ -304,6 +309,7 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildSkeleton() {
+    if (_stateMachine == null) return const SizedBox.shrink();
     return CustomPaint(
       painter: SkeletonPainter(
         poses: _poses,
@@ -313,7 +319,7 @@ class _CameraScreenState extends State<CameraScreen>
         ),
         isFrontCamera: _cameras[_selectedCameraIndex].lensDirection ==
             CameraLensDirection.front,
-        repState: _stateMachine.state,
+        repState: _stateMachine!.state,
         primaryAngle: _primaryAngle,
       ),
     );
@@ -407,10 +413,11 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   Widget _buildRepCounter() {
+    if (_stateMachine == null) return const SizedBox.shrink();
     return RepCounterWidget(
-      validReps: _stateMachine.validRepCount,
-      totalReps: _stateMachine.totalRepCount,
-      state: _stateMachine.state,
+      validReps: _stateMachine!.validRepCount,
+      totalReps: _stateMachine!.totalRepCount,
+      state: _stateMachine!.state,
     );
   }
 

@@ -11,7 +11,13 @@ import 'home_screen.dart';
 
 class SessionSummaryScreen extends StatelessWidget {
   final LiftSession session;
-  const SessionSummaryScreen({super.key, required this.session});
+  final bool fromJournal;
+
+  const SessionSummaryScreen({
+    super.key,
+    required this.session,
+    this.fromJournal = false,
+  });
 
   LiftType get _liftType => LiftType.values.firstWhere(
         (l) => l.name == session.liftType,
@@ -61,11 +67,17 @@ class SessionSummaryScreen extends StatelessWidget {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (_) => false,
-            ),
+            onTap: () {
+              if (fromJournal) {
+                Navigator.pop(context);
+              } else {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()),
+                  (_) => false,
+                );
+              }
+            },
             child: const Icon(Icons.close_rounded,
                 color: Color(0xFF64748B), size: 26),
           ),
@@ -74,9 +86,9 @@ class SessionSummaryScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'SESSION COMPLETE',
+                fromJournal ? 'SESSION DETAILS' : 'SESSION COMPLETE',
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF10B981),
+                  color: fromJournal ? const Color(0xFF2563EB) : const Color(0xFF10B981),
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 2.0,
@@ -162,13 +174,19 @@ class SessionSummaryScreen extends StatelessWidget {
           label: 'Valid Reps',
           color: const Color(0xFF10B981),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
+        _StatBox(
+          value: '${session.invalidReps}',
+          label: 'Bad Form',
+          color: const Color(0xFFEF4444),
+        ),
+        const SizedBox(width: 8),
         _StatBox(
           value: '${session.totalReps}',
           label: 'Total Reps',
           color: const Color(0xFF64748B),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         _StatBox(
           value: session.formattedDuration,
           label: 'Duration',
@@ -295,7 +313,7 @@ class SessionSummaryScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         ...session.reps.asMap().entries.map((e) =>
-            _RepRow(number: e.key + 1, rep: e.value)),
+            _RepRow(number: e.key + 1, rep: e.value, liftType: _liftType)),
       ],
     );
   }
@@ -306,11 +324,17 @@ class SessionSummaryScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
       child: GestureDetector(
-        onTap: () => Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-          (_) => false,
-        ),
+        onTap: () {
+          if (fromJournal) {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              (_) => false,
+            );
+          }
+        },
         child: Container(
           height: 54,
           width: double.infinity,
@@ -327,7 +351,7 @@ class SessionSummaryScreen extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              'Done',
+              fromJournal ? 'Back to Journal' : 'Done',
               style: GoogleFonts.outfit(
                 color: Colors.white,
                 fontSize: 16,
@@ -387,79 +411,256 @@ class _StatBox extends StatelessWidget {
 
 // ── Rep row ───────────────────────────────────────────────────
 
-class _RepRow extends StatelessWidget {
+class _RepRow extends StatefulWidget {
   final int number;
   final RepRecord rep;
-  const _RepRow({required this.number, required this.rep});
+  final LiftType liftType;
+
+  const _RepRow({
+    required this.number,
+    required this.rep,
+    required this.liftType,
+  });
+
+  @override
+  State<_RepRow> createState() => _RepRowState();
+}
+
+class _RepRowState extends State<_RepRow> {
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    final valid = rep.isValid;
+    final valid = widget.rep.isValid;
     final statusColor =
         valid ? const Color(0xFF10B981) : const Color(0xFFEF4444);
 
+    final (depthLabel, lockoutLabel, depthTarget, lockoutTarget) =
+        switch (widget.liftType) {
+      LiftType.squat => (
+          'Min Hip Angle',
+          'Lockout Hip',
+          '< ${LiftThresholds.squatDepthHipAngle.toStringAsFixed(0)}°',
+          '> ${LiftThresholds.squatLockoutHipAngle.toStringAsFixed(0)}°'
+        ),
+      LiftType.benchPress => (
+          'Min Elbow Angle',
+          'Lockout Elbow',
+          '< ${LiftThresholds.benchBottomElbowAngle.toStringAsFixed(0)}°',
+          '> ${LiftThresholds.benchLockoutElbowAngle.toStringAsFixed(0)}°'
+        ),
+      LiftType.deadlift => (
+          'Min Hip Angle',
+          'Lockout Hip',
+          '< ${LiftThresholds.deadliftBottomHipAngle.toStringAsFixed(0)}°',
+          '> ${LiftThresholds.deadliftLockoutHipAngle.toStringAsFixed(0)}°'
+        ),
+    };
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: statusColor.withValues(alpha: 0.2), width: 1),
-      ),
-      child: Row(
-        children: [
-          // Number circle
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                '$number',
-                style: GoogleFonts.outfit(
-                  color: statusColor,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 12,
+        border: Border.all(
+          color: _isExpanded
+              ? const Color(0xFF2563EB)
+              : statusColor.withValues(alpha: 0.2),
+          width: _isExpanded ? 1.5 : 1,
+        ),
+        boxShadow: _isExpanded
+            ? [
+                BoxShadow(
+                  color: const Color(0xFF2563EB).withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
+              ]
+            : [],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      // Number circle
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${widget.number}',
+                            style: GoogleFonts.outfit(
+                              color: statusColor,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              valid ? '✓  Valid Rep' : '✗  Invalid Rep',
+                              style: GoogleFonts.outfit(
+                                color: statusColor,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                              ),
+                            ),
+                            if (widget.rep.faultNotes.isNotEmpty)
+                              Text(
+                                widget.rep.faultNotes.join(' · '),
+                                style: GoogleFonts.outfit(
+                                  color: const Color(0xFF94A3B8),
+                                  fontSize: 11,
+                                ),
+                              )
+                            else
+                              Text(
+                                _isExpanded ? 'Hide metrics' : 'Tap to view metrics',
+                                style: GoogleFonts.outfit(
+                                  color: const Color(0xFF94A3B8),
+                                  fontSize: 10,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '${widget.rep.formScore.toStringAsFixed(0)}%',
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF0F172A),
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        _isExpanded
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        color: const Color(0xFF94A3B8),
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                  if (_isExpanded) ...[
+                    const SizedBox(height: 12),
+                    const Divider(color: Color(0xFFF1F5F9), height: 1),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        _buildMetricCell(
+                          icon: Icons.timer_outlined,
+                          label: 'Duration',
+                          value: '${widget.rep.durationSeconds.toStringAsFixed(1)}s',
+                          subLabel: 'Tempo',
+                          color: const Color(0xFF2563EB),
+                        ),
+                        const SizedBox(width: 8),
+                        _buildMetricCell(
+                          icon: Icons.vertical_align_bottom_rounded,
+                          label: depthLabel,
+                          value: '${widget.rep.minDepthAngle.toStringAsFixed(1)}°',
+                          subLabel: 'Target $depthTarget',
+                          color: const Color(0xFF7C3AED),
+                        ),
+                        const SizedBox(width: 8),
+                        _buildMetricCell(
+                          icon: Icons.vertical_align_top_rounded,
+                          label: lockoutLabel,
+                          value: widget.rep.lockoutAngle > 0
+                              ? '${widget.rep.lockoutAngle.toStringAsFixed(1)}°'
+                              : 'N/A',
+                          subLabel: 'Target $lockoutTarget',
+                          color: const Color(0xFF10B981),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetricCell({
+    required IconData icon,
+    required String label,
+    required String value,
+    required String subLabel,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(
-                  valid ? '✓  Valid Rep' : '✗  Invalid Rep',
-                  style: GoogleFonts.outfit(
-                    color: statusColor,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
+                Icon(icon, color: color, size: 14),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: GoogleFonts.outfit(
+                      color: const Color(0xFF64748B),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (rep.faultNotes.isNotEmpty)
-                  Text(
-                    rep.faultNotes.join(' · '),
-                    style: GoogleFonts.outfit(
-                      color: const Color(0xFF94A3B8),
-                      fontSize: 11,
-                    ),
-                  ),
               ],
             ),
-          ),
-          Text(
-            '${rep.formScore.toStringAsFixed(0)}%',
-            style: GoogleFonts.outfit(
-              color: const Color(0xFF0F172A),
-              fontWeight: FontWeight.w800,
-              fontSize: 15,
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: GoogleFonts.outfit(
+                color: const Color(0xFF0F172A),
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 2),
+            Text(
+              subLabel,
+              style: GoogleFonts.outfit(
+                color: const Color(0xFF94A3B8),
+                fontSize: 9,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

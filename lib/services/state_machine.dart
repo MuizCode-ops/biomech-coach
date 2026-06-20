@@ -70,7 +70,9 @@ abstract class RepStateMachine {
   void update(double primaryAngle, Map<String, double> secondaryAngles);
 
   void _transition(RepState next) {
+    final prev = _state;
     _state = next;
+    print('[StateMachine] Transition: ${prev.name} -> ${next.name} (Min Primary: ${_minPrimaryAngle.toStringAsFixed(1)}°)');
   }
 
   void _addFault(String fault) {
@@ -156,8 +158,8 @@ class SquatStateMachine extends RepStateMachine {
 
     switch (state) {
       case RepState.idle:
-        // Starts when hip angle drops below standing (< 160°)
-        if (primaryAngle < 160.0) {
+        // Starts when hip angle drops below standing threshold
+        if (primaryAngle < LiftThresholds.squatStartHipAngle) {
           _repStartTime = DateTime.now();
           _transition(RepState.descending);
         }
@@ -214,7 +216,7 @@ class BenchStateMachine extends RepStateMachine {
 
     switch (state) {
       case RepState.idle:
-        if (primaryAngle < 160.0) {
+        if (primaryAngle < LiftThresholds.benchStartElbowAngle) {
           _repStartTime = DateTime.now();
           _transition(RepState.descending);
         }
@@ -277,8 +279,8 @@ class DeadliftStateMachine extends RepStateMachine {
 
     switch (state) {
       case RepState.idle:
-        // Start when hip angle drops below standing (hinge begins)
-        if (primaryAngle < 150.0) {
+        // Start when hip angle drops below standing threshold (hinge begins)
+        if (primaryAngle < LiftThresholds.deadliftStartHipAngle) {
           _repStartTime = DateTime.now();
           _transition(RepState.descending);
         }

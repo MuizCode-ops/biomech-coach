@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/lift_thresholds.dart';
 import '../models/lift_session.dart';
+import '../services/backup_service.dart';
 import '../services/database_service.dart';
+import 'session_screen.dart';
 
 class JournalScreen extends StatefulWidget {
   const JournalScreen({super.key});
@@ -28,6 +30,43 @@ class _JournalScreenState extends State<JournalScreen> {
     setState(() {
       _sessions = DatabaseService.instance.getAllSessions();
     });
+  }
+
+  Future<void> _exportBackup() async {
+    final success = await BackupService.exportBackup();
+    if (mounted) {
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Backup file exported successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to export backup. Make sure you have session logs.'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _importBackup() async {
+    final count = await BackupService.importBackup();
+    if (mounted) {
+      if (count > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Success! Imported $count new session logs.')),
+        );
+        _load();
+      } else if (count == 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Import complete. All sessions in file were duplicates.')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Backup import cancelled or failed.')),
+        );
+      }
+    }
   }
 
   @override
@@ -82,6 +121,19 @@ class _JournalScreenState extends State<JournalScreen> {
           ),
           const Spacer(),
           IconButton(
+            icon: const Icon(Icons.download_rounded,
+                color: Color(0xFF64748B), size: 22),
+            tooltip: 'Import Backup',
+            onPressed: _importBackup,
+          ),
+          IconButton(
+            icon: const Icon(Icons.upload_rounded,
+                color: Color(0xFF64748B), size: 22),
+            tooltip: 'Export Backup',
+            onPressed: _exportBackup,
+          ),
+          const SizedBox(width: 8),
+          IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded,
                 color: Color(0xFF64748B), size: 20),
             onPressed: () => Navigator.pop(context),
@@ -94,6 +146,7 @@ class _JournalScreenState extends State<JournalScreen> {
   Widget _buildOverallStats() {
     final totalSessions = _sessions.length;
     final totalReps = DatabaseService.instance.totalValidReps;
+    final totalBadReps = DatabaseService.instance.totalInvalidReps;
     final avgScore =
         DatabaseService.instance.overallAverageFormScore;
 
@@ -105,12 +158,17 @@ class _JournalScreenState extends State<JournalScreen> {
               value: '$totalSessions',
               label: 'Sessions',
               color: const Color(0xFF2563EB)),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
           _StatCard(
               value: '$totalReps',
               label: 'Valid Reps',
               color: const Color(0xFF10B981)),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
+          _StatCard(
+              value: '$totalBadReps',
+              label: 'Bad Form',
+              color: const Color(0xFFEF4444)),
+          const SizedBox(width: 8),
           _StatCard(
               value: '${avgScore.toStringAsFixed(0)}%',
               label: 'Avg Form',
@@ -279,9 +337,21 @@ class _SessionCard extends StatelessWidget {
         ? const Color(0xFF10B981)
         : const Color(0xFFF59E0B);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(16),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => SessionSummaryScreen(
+              session: session,
+              fromJournal: true,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -332,9 +402,13 @@ class _SessionCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${session.validReps} reps',
+                session.invalidReps > 0
+                    ? '${session.validReps} valid · ${session.invalidReps} bad'
+                    : '${session.totalReps} reps',
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF10B981),
+                  color: session.invalidReps > 0
+                      ? const Color(0xFFEF4444)
+                      : const Color(0xFF10B981),
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
                 ),
@@ -351,6 +425,7 @@ class _SessionCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
