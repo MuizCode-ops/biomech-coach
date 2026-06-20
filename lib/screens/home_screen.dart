@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
           slivers: [
             SliverToBoxAdapter(child: _buildHeader(context)),
             SliverToBoxAdapter(child: _buildGreeting()),
-            SliverToBoxAdapter(child: _buildSquatHero(context)),
+            SliverToBoxAdapter(child: _buildActiveLifts(context)),
             SliverToBoxAdapter(child: _buildComingSoonLabel()),
             SliverToBoxAdapter(child: _buildComingSoonRow()),
             SliverToBoxAdapter(child: _buildFooter()),
@@ -145,14 +145,14 @@ class HomeScreen extends StatelessWidget {
 
   // ── Squat Hero Card ────────────────────
 
-  Widget _buildSquatHero(BuildContext context) {
+  Widget _buildActiveLifts(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'YOUR LIFT',
+            'ACTIVE LIFTS',
             style: GoogleFonts.outfit(
               color: const Color(0xFF94A3B8),
               fontSize: 11,
@@ -161,11 +161,40 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          _SquatHeroCard(
+          _LiftHeroCard(
+            liftType: LiftType.squat,
+            subtitle: 'Hip crease depth · Knee tracking · Full lockout',
+            themeColor: const Color(0xFF2563EB),
+            checkpoints: const [
+              'Hip angle < 90°',
+              'Knee valgus detection',
+              'IPF depth standard',
+              'Rep counting',
+              'Audio coaching',
+            ],
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (_) => const CameraScreen(liftType: LiftType.squat),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _LiftHeroCard(
+            liftType: LiftType.benchPress,
+            subtitle: 'Elbow flexion depth · Lockout detection · Wrist tracking',
+            themeColor: const Color(0xFFEF4444),
+            checkpoints: const [
+              'Elbow angle < 90°',
+              'Bar to chest detection',
+              'Wrist-elbow alignment',
+              'Rep counting',
+              'Audio coaching',
+            ],
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CameraScreen(liftType: LiftType.benchPress),
               ),
             ),
           ),
@@ -198,13 +227,6 @@ class HomeScreen extends StatelessWidget {
         children: [
           Expanded(
             child: _ComingSoonCard(
-              lift: LiftType.benchPress,
-              color: Color(0xFFEF4444),
-            ),
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: _ComingSoonCard(
               lift: LiftType.deadlift,
               color: Color(0xFFF59E0B),
             ),
@@ -235,17 +257,28 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// ── Squat Hero Card ────────────────────────────────────────
+// ── Reusable Lift Hero Card ────────────────────────────────────────
 
-class _SquatHeroCard extends StatefulWidget {
+class _LiftHeroCard extends StatefulWidget {
+  final LiftType liftType;
+  final String subtitle;
+  final List<String> checkpoints;
+  final Color themeColor;
   final VoidCallback onTap;
-  const _SquatHeroCard({required this.onTap});
+
+  const _LiftHeroCard({
+    required this.liftType,
+    required this.subtitle,
+    required this.checkpoints,
+    required this.themeColor,
+    required this.onTap,
+  });
 
   @override
-  State<_SquatHeroCard> createState() => _SquatHeroCardState();
+  State<_LiftHeroCard> createState() => _LiftHeroCardState();
 }
 
-class _SquatHeroCardState extends State<_SquatHeroCard>
+class _LiftHeroCardState extends State<_LiftHeroCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _scale;
@@ -285,7 +318,7 @@ class _SquatHeroCardState extends State<_SquatHeroCard>
                 BorderSide(color: Color(0xFFE2E8F0), width: 1)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF2563EB).withValues(alpha: 0.08),
+                color: widget.themeColor.withValues(alpha: 0.08),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -305,11 +338,11 @@ class _SquatHeroCardState extends State<_SquatHeroCard>
                       width: 64,
                       height: 64,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2563EB).withValues(alpha: 0.08),
+                        color: widget.themeColor.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(18),
                       ),
-                      child: const Center(
-                        child: Text('🏋️', style: TextStyle(fontSize: 32)),
+                      child: Center(
+                        child: Text(widget.liftType.emoji, style: const TextStyle(fontSize: 32)),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -320,7 +353,7 @@ class _SquatHeroCardState extends State<_SquatHeroCard>
                           Row(
                             children: [
                               Text(
-                                'Squat',
+                                widget.liftType.displayName,
                                 style: GoogleFonts.outfit(
                                   color: const Color(0xFF0F172A),
                                   fontSize: 22,
@@ -349,7 +382,7 @@ class _SquatHeroCardState extends State<_SquatHeroCard>
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Hip crease depth · Knee tracking · Full lockout',
+                            widget.subtitle,
                             style: GoogleFonts.outfit(
                               color: const Color(0xFF64748B),
                               fontSize: 13,
@@ -363,18 +396,14 @@ class _SquatHeroCardState extends State<_SquatHeroCard>
               ),
 
               // Checkpoints
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                 child: Wrap(
                   spacing: 8,
                   runSpacing: 6,
-                  children: [
-                    _Checkpoint(label: 'Hip angle < 90°', color: Color(0xFF2563EB)),
-                    _Checkpoint(label: 'Knee valgus detection', color: Color(0xFF7C3AED)),
-                    _Checkpoint(label: 'IPF depth standard', color: Color(0xFF0891B2)),
-                    _Checkpoint(label: 'Rep counting', color: Color(0xFF059669)),
-                    _Checkpoint(label: 'Audio coaching', color: Color(0xFF9333EA)),
-                  ],
+                  children: widget.checkpoints
+                      .map((label) => _Checkpoint(label: label, color: widget.themeColor))
+                      .toList(),
                 ),
               ),
 
@@ -393,7 +422,7 @@ class _SquatHeroCardState extends State<_SquatHeroCard>
                       child: Container(
                         height: 50,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF2563EB),
+                          color: widget.themeColor,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(

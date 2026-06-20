@@ -2,8 +2,10 @@
 // Post-session summary — clean white light theme.
 
 import 'package:fl_chart/fl_chart.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
 import '../constants/lift_thresholds.dart';
 import '../models/lift_session.dart';
 import '../models/rep_record.dart';
@@ -428,6 +430,30 @@ class _RepRow extends StatefulWidget {
 
 class _RepRowState extends State<_RepRow> {
   bool _isExpanded = false;
+  String? _imagePath;
+  bool _imageExists = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkImage();
+  }
+
+  Future<void> _checkImage() async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final filepath = '${appDir.path}/wrongdoing_${widget.rep.timestamp.millisecondsSinceEpoch}.jpg';
+      final file = File(filepath);
+      if (await file.exists()) {
+        setState(() {
+          _imagePath = filepath;
+          _imageExists = true;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error checking wrongdoing image: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -596,6 +622,72 @@ class _RepRowState extends State<_RepRow> {
                         ),
                       ],
                     ),
+                    if (_imageExists && _imagePath != null) ...[
+                      const SizedBox(height: 14),
+                      const Divider(color: Color(0xFFF1F5F9), height: 1),
+                      const SizedBox(height: 14),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Captured Wrongdoing:',
+                          style: GoogleFonts.outfit(
+                            color: const Color(0xFFEF4444),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xFFEF4444).withValues(alpha: 0.25),
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Stack(
+                            alignment: Alignment.bottomLeft,
+                            children: [
+                              Image.file(
+                                File(_imagePath!),
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 220,
+                              ),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 10),
+                                color: const Color(0xFFEF4444).withValues(alpha: 0.85),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        widget.rep.faultNotes.join(' · '),
+                                        style: GoogleFonts.outfit(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ],
               ),

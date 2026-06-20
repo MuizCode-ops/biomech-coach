@@ -2,8 +2,10 @@
 // Live camera + pose detection — defaults to front camera, clean frosted HUD.
 
 import 'dart:async';
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import '../constants/lift_thresholds.dart';
@@ -45,6 +47,7 @@ class _CameraScreenState extends State<CameraScreen>
   double _primaryAngle = 180.0;
   double _secondaryAngle = 180.0;
   final List<double> _angleHistory = [];
+  final List<double> _benchAvgHistory = [];
 
   // ── Session ────────────────────────────
   final List<RepRecord> _sessionReps = [];
@@ -82,6 +85,9 @@ class _CameraScreenState extends State<CameraScreen>
         isValid: result.isValid,
         validCount: sm.validRepCount,
       );
+      if (!result.isValid) {
+        _captureWrongdoingImage(record);
+      }
     };
 
     sm.onCoachingCue = (cue) {
@@ -159,7 +165,7 @@ class _CameraScreenState extends State<CameraScreen>
           'torso': BiomechanicsEngine.squatTorsoLean(lm),
         };
       case LiftType.benchPress:
-        primary = BiomechanicsEngine.benchAvgElbowAngle(lm);
+        primary = BiomechanicsEngine.benchElbowAngle(lm);
         secondary = BiomechanicsEngine.benchElbowAngleRight(lm);
       case LiftType.deadlift:
         primary = BiomechanicsEngine.deadliftHipAngle(lm);
@@ -170,20 +176,70 @@ class _CameraScreenState extends State<CameraScreen>
         };
     }
 
-    // Smooth
-    _angleHistory.add(primary);
-    if (_angleHistory.length > LiftThresholds.smoothingWindow) {
-      _angleHistory.removeAt(0);
+    if (widget.liftType == LiftType.benchPress) {
+      // Smooth Left elbow for UI display
+      _angleHistory.add(primary);
+      if (_angleHistory.length > LiftThresholds.smoothingWindow) {
+        _angleHistory.removeAt(0);
+      }
+      final smoothedLeft = BiomechanicsEngine.smoothAngle(_angleHistory);
+
+      // Smooth average elbow angle for State Machine processing
+      final avg = BiomechanicsEngine.benchAvgElbowAngle(lm);
+      _benchAvgHistory.add(avg);
+      if (_benchAvgHistory.length > LiftThresholds.smoothingWindow) {
+        _benchAvgHistory.removeAt(0);
+      }
+      final smoothedAvg = BiomechanicsEngine.smoothAngle(_benchAvgHistory);
+
+      setState(() {
+        _primaryAngle = smoothedLeft;
+        _secondaryAngle = secondary;
+      });
+
+      if (_sessionActive && _stateMachine != null) {
+        _stateMachine!.update(smoothedAvg, extras);
+      }
+    } else {
+      // Smooth primary angle for display and State Machine
+      _angleHistory.add(primary);
+      if (_angleHistory.length > LiftThresholds.smoothingWindow) {
+        _angleHistory.removeAt(0);
+      }
+      final smoothed = BiomechanicsEngine.smoothAngle(_angleHistory);
+
+      setState(() {
+        _primaryAngle = smoothed;
+        _secondaryAngle = secondary;
+      });
+
+      if (_sessionActive && _stateMachine != null) {
+        _stateMachine!.update(smoothed, extras);
+      }
     }
-    final smoothed = BiomechanicsEngine.smoothAngle(_angleHistory);
+  }
 
-    setState(() {
-      _primaryAngle = smoothed;
-      _secondaryAngle = secondary;
-    });
+  Future<void> _captureWrongdoingImage(RepRecord record) async {
+    final controller = _cameraController;
+    if (controller == null || !controller.value.isInitialized) return;
 
-    if (_sessionActive && _stateMachine != null) {
-      _stateMachine!.update(smoothed, extras);
+    try {
+      // Capture a snapshot from the video feed
+      final XFile file = await controller.takePicture();
+
+      // Get permanent application documents directory
+      final appDir = await getApplicationDocumentsDirectory();
+      final String filename = 'wrongdoing_${record.timestamp.millisecondsSinceEpoch}.jpg';
+      final String permanentPath = '${appDir.path}/$filename';
+
+      // Copy snapshot to local storage
+      await File(file.path).copy(permanentPath);
+
+      // Delete the temporary cache file
+      await File(file.path).delete();
+      print('[CameraScreen] Saved wrongdoing screenshot to $permanentPath');
+    } catch (e) {
+      print('[CameraScreen] Error capturing wrongdoing image: $e');
     }
   }
 
@@ -193,6 +249,8 @@ class _CameraScreenState extends State<CameraScreen>
       if (_sessionActive) {
         _sessionStart = DateTime.now();
         _sessionReps.clear();
+        _angleHistory.clear();
+        _benchAvgHistory.clear();
         _stateMachine?.reset();
       } else {
         _endSession();
