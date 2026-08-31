@@ -65,6 +65,9 @@ abstract class RepStateMachine {
   /// Lift-specific start cue text. Override in subclasses.
   String get _startCueText => 'Squat!';
 
+  /// Whether this lift requires a 'Rack!' cue before completing. Override to disable.
+  bool get _requiresRackCue => true;
+
   /// Returns true when the last [_stabilityFrames] angles vary by ≤ [_stabilityTolerance]°.
   bool _isStable(double angle) {
     _stabilityBuffer.add(angle);
@@ -168,6 +171,9 @@ abstract class RepStateMachine {
 // ──────────────────────────────────────────────────
 class SquatStateMachine extends RepStateMachine {
   @override
+  bool get _requiresRackCue => false;
+
+  @override
   double get _depthThreshold => LiftThresholds.squatDepthHipAngle;
 
   @override
@@ -230,14 +236,16 @@ class SquatStateMachine extends RepStateMachine {
         }
 
       case RepState.lockout:
-        // Wait for stability, then give 'Rack!' cue before completing
-        if (!_rackCueGiven) {
-          if (_isStable(primaryAngle)) {
+        if (!_requiresRackCue) {
+          _completeRep(primaryAngle);
+          return;
+        }
+        if (_isStable(primaryAngle)) {
+          if (!_rackCueGiven) {
             onCoachingCue?.call('Rack!');
             _rackCueGiven = true;
-            _stabilityBuffer.clear();
+            return;
           }
-        } else if (_isStable(primaryAngle)) {
           _completeRep(_lockoutAngle);
         }
 
@@ -315,13 +323,16 @@ class BenchStateMachine extends RepStateMachine {
         }
 
       case RepState.lockout:
-        if (!_rackCueGiven) {
-          if (_isStable(primaryAngle)) {
+        if (!_requiresRackCue) {
+          _completeRep(primaryAngle);
+          return;
+        }
+        if (_isStable(primaryAngle)) {
+          if (!_rackCueGiven) {
             onCoachingCue?.call('Rack!');
             _rackCueGiven = true;
-            _stabilityBuffer.clear();
+            return;
           }
-        } else if (_isStable(primaryAngle)) {
           _completeRep(_lockoutAngle);
         }
 
@@ -391,13 +402,16 @@ class DeadliftStateMachine extends RepStateMachine {
         }
 
       case RepState.lockout:
-        if (!_rackCueGiven) {
-          if (_isStable(primaryAngle)) {
+        if (!_requiresRackCue) {
+          _completeRep(primaryAngle);
+          return;
+        }
+        if (_isStable(primaryAngle)) {
+          if (!_rackCueGiven) {
             onCoachingCue?.call('Rack!');
             _rackCueGiven = true;
-            _stabilityBuffer.clear();
+            return;
           }
-        } else if (_isStable(primaryAngle)) {
           _completeRep(_lockoutAngle);
         }
 
