@@ -54,6 +54,29 @@ abstract class RepStateMachine {
   final List<String> _faults = [];
   DateTime? _repStartTime;
 
+  // ── Stability tracking for referee cues ──
+  final List<double> _stabilityBuffer = [];
+  static const int _stabilityFrames = 15;
+  static const double _stabilityTolerance = 3.0;
+  bool _squatCueGiven = false;
+  bool _pressCueGiven = false;
+  bool _rackCueGiven = false;
+
+  /// Lift-specific start cue text. Override in subclasses.
+  String get _startCueText => 'Squat!';
+
+  /// Returns true when the last [_stabilityFrames] angles vary by ≤ [_stabilityTolerance]°.
+  bool _isStable(double angle) {
+    _stabilityBuffer.add(angle);
+    if (_stabilityBuffer.length > _stabilityFrames) {
+      _stabilityBuffer.removeAt(0);
+    }
+    if (_stabilityBuffer.length < _stabilityFrames) return false;
+    final maxVal = _stabilityBuffer.reduce((a, b) => a > b ? a : b);
+    final minVal = _stabilityBuffer.reduce((a, b) => a < b ? a : b);
+    return (maxVal - minVal) <= _stabilityTolerance;
+  }
+
   int _validRepCount = 0;
   int _totalRepCount = 0;
   int get validRepCount => _validRepCount;
@@ -113,6 +136,10 @@ abstract class RepStateMachine {
     _prevAngle = 180.0;
     _lockoutAngle = 0.0;
     _repStartTime = null;
+    _stabilityBuffer.clear();
+    _squatCueGiven = false;
+    _pressCueGiven = false;
+    _rackCueGiven = false;
     _transition(RepState.idle);
   }
 
@@ -129,6 +156,10 @@ abstract class RepStateMachine {
     _prevAngle = 180.0;
     _lockoutAngle = 0.0;
     _repStartTime = null;
+    _stabilityBuffer.clear();
+    _squatCueGiven = false;
+    _pressCueGiven = false;
+    _rackCueGiven = false;
   }
 }
 
@@ -161,8 +192,14 @@ class SquatStateMachine extends RepStateMachine {
 
     switch (state) {
       case RepState.idle:
-        // Starts when hip angle drops below standing threshold
-        if (primaryAngle < LiftThresholds.squatStartHipAngle) {
+        // Wait for stability, then give start cue before allowing descent
+        if (!_squatCueGiven) {
+          if (_isStable(primaryAngle)) {
+            onCoachingCue?.call(_startCueText);
+            _squatCueGiven = true;
+            _stabilityBuffer.clear();
+          }
+        } else if (primaryAngle < LiftThresholds.squatStartHipAngle) {
           _repStartTime = DateTime.now();
           _transition(RepState.descending);
         }
@@ -193,7 +230,16 @@ class SquatStateMachine extends RepStateMachine {
         }
 
       case RepState.lockout:
-        _completeRep(_lockoutAngle);
+        // Wait for stability, then give 'Rack!' cue before completing
+        if (!_rackCueGiven) {
+          if (_isStable(primaryAngle)) {
+            onCoachingCue?.call('Rack!');
+            _rackCueGiven = true;
+            _stabilityBuffer.clear();
+          }
+        } else if (_isStable(primaryAngle)) {
+          _completeRep(_lockoutAngle);
+        }
 
       case RepState.complete:
         break;
@@ -205,6 +251,9 @@ class SquatStateMachine extends RepStateMachine {
 //  BENCH PRESS State Machine
 // ──────────────────────────────────────────────────
 class BenchStateMachine extends RepStateMachine {
+  @override
+  String get _startCueText => 'Start!';
+
   @override
   double get _depthThreshold => LiftThresholds.benchBottomElbowAngle;
 
@@ -220,7 +269,14 @@ class BenchStateMachine extends RepStateMachine {
 
     switch (state) {
       case RepState.idle:
-        if (primaryAngle < LiftThresholds.benchStartElbowAngle) {
+        // Wait for stability, then give 'Start!' cue before allowing descent
+        if (!_squatCueGiven) {
+          if (_isStable(primaryAngle)) {
+            onCoachingCue?.call(_startCueText);
+            _squatCueGiven = true;
+            _stabilityBuffer.clear();
+          }
+        } else if (primaryAngle < LiftThresholds.benchStartElbowAngle) {
           _repStartTime = DateTime.now();
           _transition(RepState.descending);
         }
@@ -233,6 +289,15 @@ class BenchStateMachine extends RepStateMachine {
         _prevAngle = primaryAngle;
 
       case RepState.atDepth:
+        // Require stable pause at chest before allowing press
+        if (!_pressCueGiven) {
+          if (_isStable(primaryAngle)) {
+            onCoachingCue?.call('Press!');
+            _pressCueGiven = true;
+            _stabilityBuffer.clear();
+          }
+          return;
+        }
         if (primaryAngle > _minPrimaryAngle + 10.0) {
           if (_minPrimaryAngle > LiftThresholds.benchBottomElbowAngle) {
             _addFault('Touch chest!');
@@ -250,7 +315,15 @@ class BenchStateMachine extends RepStateMachine {
         }
 
       case RepState.lockout:
-        _completeRep(_lockoutAngle);
+        if (!_rackCueGiven) {
+          if (_isStable(primaryAngle)) {
+            onCoachingCue?.call('Rack!');
+            _rackCueGiven = true;
+            _stabilityBuffer.clear();
+          }
+        } else if (_isStable(primaryAngle)) {
+          _completeRep(_lockoutAngle);
+        }
 
       case RepState.complete:
         break;
@@ -286,8 +359,14 @@ class DeadliftStateMachine extends RepStateMachine {
 
     switch (state) {
       case RepState.idle:
-        // Start when hip angle drops below standing threshold (hinge begins)
-        if (primaryAngle < LiftThresholds.deadliftStartHipAngle) {
+        // Wait for stability, then give start cue before allowing descent
+        if (!_squatCueGiven) {
+          if (_isStable(primaryAngle)) {
+            onCoachingCue?.call(_startCueText);
+            _squatCueGiven = true;
+            _stabilityBuffer.clear();
+          }
+        } else if (primaryAngle < LiftThresholds.deadliftStartHipAngle) {
           _repStartTime = DateTime.now();
           _transition(RepState.descending);
         }
@@ -312,7 +391,15 @@ class DeadliftStateMachine extends RepStateMachine {
         }
 
       case RepState.lockout:
-        _completeRep(_lockoutAngle);
+        if (!_rackCueGiven) {
+          if (_isStable(primaryAngle)) {
+            onCoachingCue?.call('Rack!');
+            _rackCueGiven = true;
+            _stabilityBuffer.clear();
+          }
+        } else if (_isStable(primaryAngle)) {
+          _completeRep(_lockoutAngle);
+        }
 
       case RepState.complete:
         break;

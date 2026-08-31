@@ -20,6 +20,7 @@ import '../widgets/angle_indicator.dart';
 import '../widgets/rep_counter_widget.dart';
 import '../widgets/skeleton_painter.dart';
 import 'session_screen.dart';
+import 'dart:math' as math;
 
 class CameraScreen extends StatefulWidget {
   final LiftType liftType;
@@ -131,9 +132,8 @@ class _CameraScreenState extends State<CameraScreen>
       _cameras[index],
       ResolutionPreset.high,
       enableAudio: false,
-      imageFormatGroup: Platform.isIOS
-          ? ImageFormatGroup.bgra8888
-          : ImageFormatGroup.nv21,
+      imageFormatGroup:
+          Platform.isIOS ? ImageFormatGroup.bgra8888 : ImageFormatGroup.nv21,
     );
 
     await _cameraController!.initialize();
@@ -144,8 +144,8 @@ class _CameraScreenState extends State<CameraScreen>
     final rotation = PoseService.rotationFromCamera(_cameras[index]);
 
     _cameraController!.startImageStream((image) async {
-      final poses = await _poseService.processFrame(
-          image, _cameras[index], rotation);
+      final poses =
+          await _poseService.processFrame(image, _cameras[index], rotation);
       if (!mounted) return;
       setState(() => _poses = poses);
       if (poses.isNotEmpty) _processPose(poses.first);
@@ -231,7 +231,8 @@ class _CameraScreenState extends State<CameraScreen>
 
       // Get permanent application documents directory
       final appDir = await getApplicationDocumentsDirectory();
-      final String filename = 'wrongdoing_${record.timestamp.millisecondsSinceEpoch}.jpg';
+      final String filename =
+          'wrongdoing_${record.timestamp.millisecondsSinceEpoch}.jpg';
       final String permanentPath = '${appDir.path}/$filename';
 
       // Copy snapshot to local storage
@@ -405,8 +406,8 @@ class _CameraScreenState extends State<CameraScreen>
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
-                  border:
-                      Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+                  border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2), width: 1),
                 ),
                 child: Text(
                   '${widget.liftType.emoji}  ${widget.liftType.displayName.toUpperCase()}',
@@ -443,12 +444,17 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildAngles() {
     final (primaryLabel, secondaryLabel, targetPrimary) =
         switch (widget.liftType) {
-      LiftType.squat =>
-        ('HIP', 'KNEE', LiftThresholds.squatDepthHipAngle),
-      LiftType.benchPress =>
-        ('ELBOW L', 'ELBOW R', LiftThresholds.benchBottomElbowAngle),
-      LiftType.deadlift =>
-        ('HIP', 'KNEE', LiftThresholds.deadliftBottomHipAngle),
+      LiftType.squat => ('HIP', 'KNEE', LiftThresholds.squatDepthHipAngle),
+      LiftType.benchPress => (
+          'ELBOW L',
+          'ELBOW R',
+          LiftThresholds.benchBottomElbowAngle
+        ),
+      LiftType.deadlift => (
+          'HIP',
+          'KNEE',
+          LiftThresholds.deadliftBottomHipAngle
+        ),
     };
 
     final isGood = _primaryAngle <= targetPrimary + 15;
@@ -498,7 +504,8 @@ class _CameraScreenState extends State<CameraScreen>
       ),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 18),
+          const Icon(Icons.warning_amber_rounded,
+              color: Colors.white, size: 18),
           const SizedBox(width: 8),
           Text(
             fault,
@@ -522,7 +529,8 @@ class _CameraScreenState extends State<CameraScreen>
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1),
+            border: Border.all(
+                color: Colors.white.withValues(alpha: 0.15), width: 1),
           ),
           child: GestureDetector(
             onTap: _toggleSession,
@@ -591,7 +599,8 @@ class _HudButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+          border:
+              Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
         ),
         child: Icon(icon, color: Colors.white, size: 20),
       ),
