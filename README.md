@@ -34,7 +34,7 @@ This is the fastest way to test the squat tracking pipeline before the iOS build
 
 ## 3. Run on iPhone — Without a Mac (Codemagic)
 
-Since you have an iPhone but no Mac, use **Codemagic** to build iOS in the cloud.
+Use **Codemagic** to build iOS in the cloud.
 
 ### Step-by-Step
 
