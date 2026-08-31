@@ -61,6 +61,12 @@ class LiftThresholds {
   /// Elbow angle for lockout — must be ≥ this
   static const double benchLockoutElbowAngle = 140.0;
 
+  /// Elbow angle threshold below which a shallow-depth fault is checked during ascent
+  static const double benchAscendShallowCheckAngle = 120.0;
+
+  /// Minimum depth angle (elbow) required to suppress the shallow-depth fault during ascent
+  static const double benchMinDepthForShallowCheck = 80.0;
+
   /// Wrist should track roughly over the elbow
   static const double benchWristAlignmentTolerance = 20.0;
 

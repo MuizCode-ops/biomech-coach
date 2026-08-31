@@ -1,5 +1,5 @@
 // lib/screens/session_screen.dart
-// Post-session summary — clean white light theme.
+// Post-session summary — Premium Dark NBA-Style Theme with game final scoreboard layouts.
 
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:io';
@@ -26,19 +26,20 @@ class SessionSummaryScreen extends StatelessWidget {
         orElse: () => LiftType.squat,
       );
 
-  Color get _accent => const Color(0xFF2563EB);
+  Color get _accent => const Color(0xFF2F80ED); // Neon Game Blue
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFF090D1A), // Midnight Obsidian Navy
       body: SafeArea(
         child: Column(
           children: [
             _buildHeader(context),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -63,9 +64,32 @@ class SessionSummaryScreen extends StatelessWidget {
 
   // ── Header ─────────────────────────────
 
+  String get _abbreviation {
+    switch (_liftType) {
+      case LiftType.squat:
+        return 'SQT';
+      case LiftType.benchPress:
+        return 'B.P';
+      case LiftType.deadlift:
+        return 'DL';
+    }
+  }
+
+  Color get _themeColor {
+    switch (_liftType) {
+      case LiftType.squat:
+        return const Color(0xFF10B981);
+      case LiftType.benchPress:
+        return const Color(0xFFC9082A);
+      case LiftType.deadlift:
+        return const Color(0xFF1D428A);
+    }
+  }
+
   Widget _buildHeader(BuildContext context) {
+    final statusColor = fromJournal ? const Color(0xFF2F80ED) : const Color(0xFF10B981);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
       child: Row(
         children: [
           GestureDetector(
@@ -80,40 +104,72 @@ class SessionSummaryScreen extends StatelessWidget {
                 );
               }
             },
-            child: const Icon(Icons.close_rounded,
-                color: Color(0xFF64748B), size: 26),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: const Color(0xFF161F38),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFF263254), width: 1),
+              ),
+              child: const Icon(Icons.close_rounded,
+                  color: Colors.white, size: 20),
+            ),
           ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                fromJournal ? 'SESSION DETAILS' : 'SESSION COMPLETE',
+                (fromJournal ? 'GAME DETAIL SUMMARY' : 'MATCH COMPLETE').toUpperCase(),
                 style: GoogleFonts.outfit(
-                  color: fromJournal ? const Color(0xFF2563EB) : const Color(0xFF10B981),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                  color: statusColor,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: 2.0,
                 ),
               ),
               Text(
-                _liftType.displayName,
+                _liftType.displayName.toUpperCase(),
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF0F172A),
+                  color: Colors.white,
                   fontSize: 24,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
                 ),
               ),
             ],
           ),
           const Spacer(),
-          Text(_liftType.emoji, style: const TextStyle(fontSize: 36)),
+          // Typographic team-like badge instead of emoji
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F1524),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: _themeColor.withValues(alpha: 0.7),
+                width: 1.5,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                _abbreviation,
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // ── Score banner ────────────────────────
+  // ── Score banner (NBA Game Final Box style) ────────────────────────
 
   Widget _buildScoreBanner() {
     final score = session.averageFormScore;
@@ -122,42 +178,64 @@ class SessionSummaryScreen extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
+        color: const Color(0xFF111625),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF202B47), width: 1.0),
       ),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                isGreat ? '🎯 Excellent Form!' : '💪 Keep Improving!',
-                style: GoogleFonts.outfit(
-                  color: color,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: color.withValues(alpha: 0.4), width: 0.8),
+                  ),
+                  child: Text(
+                    'FINAL RATING',
+                    style: GoogleFonts.outfit(
+                      color: color,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
                 ),
-              ),
-              Text(
-                isGreat
-                    ? 'Your reps met competition standards.'
-                    : 'Work on depth and lockout consistency.',
-                style: GoogleFonts.outfit(
-                  color: const Color(0xFF64748B),
-                  fontSize: 12,
+                const SizedBox(height: 10),
+                Text(
+                  isGreat ? '🎯 Form locked in!' : '💪 Adjust parameters',
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  isGreat
+                      ? 'Reps hit absolute depth/lockout standards.'
+                      : 'Audio logs flag warnings for deep angle thresholds.',
+                  style: GoogleFonts.outfit(
+                    color: const Color(0xFF94A3B8),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 16),
           Text(
             '${score.toStringAsFixed(0)}%',
             style: GoogleFonts.outfit(
               color: color,
-              fontSize: 36,
+              fontSize: 38,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -173,20 +251,20 @@ class SessionSummaryScreen extends StatelessWidget {
       children: [
         _StatBox(
           value: '${session.validReps}',
-          label: 'Valid Reps',
+          label: 'Wins',
           color: const Color(0xFF10B981),
         ),
         const SizedBox(width: 8),
         _StatBox(
           value: '${session.invalidReps}',
-          label: 'Bad Form',
-          color: const Color(0xFFEF4444),
+          label: 'Losses',
+          color: const Color(0xFFC9082A),
         ),
         const SizedBox(width: 8),
         _StatBox(
           value: '${session.totalReps}',
-          label: 'Total Reps',
-          color: const Color(0xFF64748B),
+          label: 'Total',
+          color: const Color(0xFF94A3B8),
         ),
         const SizedBox(width: 8),
         _StatBox(
@@ -198,30 +276,30 @@ class SessionSummaryScreen extends StatelessWidget {
     );
   }
 
-  // ── Chart ───────────────────────────────
+  // ── Chart (Neon Grid style) ───────────────────────────────
 
   Widget _buildChartSection() {
     if (session.reps.length < 2) return const SizedBox.shrink();
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: const Border.fromBorderSide(
-            BorderSide(color: Color(0xFFE2E8F0), width: 1)),
+        color: const Color(0xFF111625),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF202B47), width: 1.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Form Score per Rep',
+            'REP FLEX PERFORMANCE CHART',
             style: GoogleFonts.outfit(
-              color: const Color(0xFF0F172A),
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.0,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           SizedBox(
             height: 140,
             child: LineChart(
@@ -232,7 +310,7 @@ class SessionSummaryScreen extends StatelessWidget {
                   show: true,
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (_) => const FlLine(
-                    color: Color(0xFFF1F5F9),
+                    color: Color(0xFF1E293B),
                     strokeWidth: 1,
                   ),
                 ),
@@ -245,7 +323,7 @@ class SessionSummaryScreen extends StatelessWidget {
                       getTitlesWidget: (v, _) => Text(
                         v.toInt().toString(),
                         style: GoogleFonts.outfit(
-                            color: const Color(0xFF94A3B8), fontSize: 10),
+                            color: const Color(0xFF475569), fontSize: 10, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -259,7 +337,7 @@ class SessionSummaryScreen extends StatelessWidget {
                       getTitlesWidget: (v, _) => Text(
                         'R${v.toInt() + 1}',
                         style: GoogleFonts.outfit(
-                            color: const Color(0xFF94A3B8), fontSize: 10),
+                            color: const Color(0xFF475569), fontSize: 10, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -274,20 +352,21 @@ class SessionSummaryScreen extends StatelessWidget {
                         .toList(),
                     isCurved: true,
                     color: _accent,
-                    barWidth: 2.5,
+                    barWidth: 3.0,
                     dotData: FlDotData(
                       show: true,
                       getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
                         radius: 5,
                         color: session.reps[spot.x.toInt()].isValid
                             ? const Color(0xFF10B981)
-                            : const Color(0xFFEF4444),
-                        strokeWidth: 0,
+                            : const Color(0xFFC9082A),
+                        strokeWidth: 1.5,
+                        strokeColor: Colors.white,
                       ),
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: _accent.withValues(alpha: 0.05),
+                      color: _accent.withValues(alpha: 0.1),
                     ),
                   ),
                 ],
@@ -306,11 +385,12 @@ class SessionSummaryScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Rep Breakdown',
+          'PLAY-BY-PLAY BREAKDOWN',
           style: GoogleFonts.outfit(
-            color: const Color(0xFF0F172A),
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
+            color: const Color(0xFF475569),
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2.0,
           ),
         ),
         const SizedBox(height: 12),
@@ -324,7 +404,7 @@ class SessionSummaryScreen extends StatelessWidget {
 
   Widget _buildDoneButton(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
       child: GestureDetector(
         onTap: () {
           if (fromJournal) {
@@ -338,26 +418,27 @@ class SessionSummaryScreen extends StatelessWidget {
           }
         },
         child: Container(
-          height: 54,
+          height: 52,
           width: double.infinity,
           decoration: BoxDecoration(
-            color: const Color(0xFF2563EB),
-            borderRadius: BorderRadius.circular(16),
+            color: const Color(0xFF1D428A), // NBA Blue
+            borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF2563EB).withValues(alpha: 0.3),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
+                color: const Color(0xFF1D428A).withValues(alpha: 0.35),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Center(
             child: Text(
-              fromJournal ? 'Back to Journal' : 'Done',
+              (fromJournal ? 'RETURN TO JOURNAL' : 'CLOSE REPORT').toUpperCase(),
               style: GoogleFonts.outfit(
                 color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.0,
               ),
             ),
           ),
@@ -367,7 +448,7 @@ class SessionSummaryScreen extends StatelessWidget {
   }
 }
 
-// ── Stat box ──────────────────────────────────────────────────
+// ── Stat box (NBA score card segment) ──────────────────────────────────────────────────
 
 class _StatBox extends StatelessWidget {
   final String value;
@@ -380,12 +461,11 @@ class _StatBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: const Border.fromBorderSide(
-              BorderSide(color: Color(0xFFE2E8F0), width: 1)),
+          color: const Color(0xFF0F172A),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFF1E293B), width: 1.0),
         ),
         child: Column(
           children: [
@@ -393,15 +473,18 @@ class _StatBox extends StatelessWidget {
               value,
               style: GoogleFonts.outfit(
                 color: color,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
               ),
             ),
+            const SizedBox(height: 2),
             Text(
-              label,
+              label.toUpperCase(),
               style: GoogleFonts.outfit(
-                color: const Color(0xFF94A3B8),
-                fontSize: 11,
+                color: const Color(0xFF64748B),
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
               ),
             ),
           ],
@@ -458,25 +541,24 @@ class _RepRowState extends State<_RepRow> {
   @override
   Widget build(BuildContext context) {
     final valid = widget.rep.isValid;
-    final statusColor =
-        valid ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+    final statusColor = valid ? const Color(0xFF10B981) : const Color(0xFFC9082A);
 
     final (depthLabel, lockoutLabel, depthTarget, lockoutTarget) =
         switch (widget.liftType) {
       LiftType.squat => (
-          'Min Hip Angle',
+          'Min Hip',
           'Lockout Hip',
           '< ${LiftThresholds.squatDepthHipAngle.toStringAsFixed(0)}°',
           '> ${LiftThresholds.squatLockoutHipAngle.toStringAsFixed(0)}°'
         ),
       LiftType.benchPress => (
-          'Min Elbow Angle',
+          'Min Elbow',
           'Lockout Elbow',
           '< ${LiftThresholds.benchBottomElbowAngle.toStringAsFixed(0)}°',
           '> ${LiftThresholds.benchLockoutElbowAngle.toStringAsFixed(0)}°'
         ),
       LiftType.deadlift => (
-          'Min Hip Angle',
+          'Min Hip',
           'Lockout Hip',
           '< ${LiftThresholds.deadliftBottomHipAngle.toStringAsFixed(0)}°',
           '> ${LiftThresholds.deadliftLockoutHipAngle.toStringAsFixed(0)}°'
@@ -486,26 +568,17 @@ class _RepRowState extends State<_RepRow> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        color: const Color(0xFF111625),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _isExpanded
-              ? const Color(0xFF2563EB)
-              : statusColor.withValues(alpha: 0.2),
+              ? const Color(0xFF2F80ED)
+              : const Color(0xFF202B47),
           width: _isExpanded ? 1.5 : 1,
         ),
-        boxShadow: _isExpanded
-            ? [
-                BoxShadow(
-                  color: const Color(0xFF2563EB).withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : [],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -520,63 +593,68 @@ class _RepRowState extends State<_RepRow> {
                 children: [
                   Row(
                     children: [
-                      // Number circle
+                      // Number jersey circle
                       Container(
-                        width: 30,
-                        height: 30,
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.1),
+                          color: const Color(0xFF090D1A),
                           shape: BoxShape.circle,
+                          border: Border.all(color: statusColor, width: 1.5),
                         ),
                         child: Center(
                           child: Text(
                             '${widget.number}',
                             style: GoogleFonts.outfit(
-                              color: statusColor,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 13,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 14),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              valid ? '✓  Valid Rep' : '✗  Invalid Rep',
+                              valid ? '✓  CLEAR REP' : '✗  FAULT DECLARED',
                               style: GoogleFonts.outfit(
                                 color: statusColor,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w900,
                                 fontSize: 13,
+                                letterSpacing: 0.5,
                               ),
                             ),
+                            const SizedBox(height: 2),
                             if (widget.rep.faultNotes.isNotEmpty)
                               Text(
-                                widget.rep.faultNotes.join(' · '),
+                                widget.rep.faultNotes.join(' · ').toUpperCase(),
                                 style: GoogleFonts.outfit(
-                                  color: const Color(0xFF94A3B8),
-                                  fontSize: 11,
+                                  color: const Color(0xFF64748B),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               )
                             else
                               Text(
-                                _isExpanded ? 'Hide metrics' : 'Tap to view metrics',
+                                _isExpanded ? 'TAP TO COLLAPSE' : 'TAP TO INSPECT METRICS',
                                 style: GoogleFonts.outfit(
-                                  color: const Color(0xFF94A3B8),
+                                  color: const Color(0xFF475569),
                                   fontSize: 10,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                           ],
                         ),
                       ),
                       Text(
-                        '${widget.rep.formScore.toStringAsFixed(0)}%',
+                        '${widget.rep.formScore.toStringAsFixed(0)}% PCT',
                         style: GoogleFonts.outfit(
-                          color: const Color(0xFF0F172A),
-                          fontWeight: FontWeight.w800,
-                          fontSize: 15,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -584,30 +662,30 @@ class _RepRowState extends State<_RepRow> {
                         _isExpanded
                             ? Icons.keyboard_arrow_up_rounded
                             : Icons.keyboard_arrow_down_rounded,
-                        color: const Color(0xFF94A3B8),
+                        color: const Color(0xFF64748B),
                         size: 20,
                       ),
                     ],
                   ),
                   if (_isExpanded) ...[
-                    const SizedBox(height: 12),
-                    const Divider(color: Color(0xFFF1F5F9), height: 1),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
+                    const Divider(color: Color(0xFF202B47), height: 1),
+                    const SizedBox(height: 14),
                     Row(
                       children: [
                         _buildMetricCell(
                           icon: Icons.timer_outlined,
-                          label: 'Duration',
+                          label: 'TEMPO',
                           value: '${widget.rep.durationSeconds.toStringAsFixed(1)}s',
-                          subLabel: 'Tempo',
-                          color: const Color(0xFF2563EB),
+                          subLabel: 'Lift Duration',
+                          color: const Color(0xFF2F80ED),
                         ),
                         const SizedBox(width: 8),
                         _buildMetricCell(
                           icon: Icons.vertical_align_bottom_rounded,
                           label: depthLabel,
                           value: '${widget.rep.minDepthAngle.toStringAsFixed(1)}°',
-                          subLabel: 'Target $depthTarget',
+                          subLabel: 'Req. $depthTarget',
                           color: const Color(0xFF7C3AED),
                         ),
                         const SizedBox(width: 8),
@@ -617,23 +695,23 @@ class _RepRowState extends State<_RepRow> {
                           value: widget.rep.lockoutAngle > 0
                               ? '${widget.rep.lockoutAngle.toStringAsFixed(1)}°'
                               : 'N/A',
-                          subLabel: 'Target $lockoutTarget',
+                          subLabel: 'Req. $lockoutTarget',
                           color: const Color(0xFF10B981),
                         ),
                       ],
                     ),
                     if (_imageExists && _imagePath != null) ...[
                       const SizedBox(height: 14),
-                      const Divider(color: Color(0xFFF1F5F9), height: 1),
+                      const Divider(color: Color(0xFF202B47), height: 1),
                       const SizedBox(height: 14),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Captured Wrongdoing:',
+                          'KINESIOLOGY ALARM SNAPSHOT:',
                           style: GoogleFonts.outfit(
-                            color: const Color(0xFFEF4444),
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFFC9082A),
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -644,7 +722,7 @@ class _RepRowState extends State<_RepRow> {
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: const Color(0xFFEF4444).withValues(alpha: 0.25),
+                              color: const Color(0xFFC9082A).withValues(alpha: 0.5),
                               width: 1.5,
                             ),
                           ),
@@ -661,7 +739,7 @@ class _RepRowState extends State<_RepRow> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 14, vertical: 10),
-                                color: const Color(0xFFEF4444).withValues(alpha: 0.85),
+                                color: const Color(0xFFC9082A).withValues(alpha: 0.85),
                                 child: Row(
                                   children: [
                                     const Icon(
@@ -672,11 +750,11 @@ class _RepRowState extends State<_RepRow> {
                                     const SizedBox(width: 8),
                                     Expanded(
                                       child: Text(
-                                        widget.rep.faultNotes.join(' · '),
+                                        widget.rep.faultNotes.join(' · ').toUpperCase(),
                                         style: GoogleFonts.outfit(
                                           color: Colors.white,
                                           fontSize: 12,
-                                          fontWeight: FontWeight.w700,
+                                          fontWeight: FontWeight.w900,
                                         ),
                                       ),
                                     ),
@@ -709,9 +787,9 @@ class _RepRowState extends State<_RepRow> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 0.8),
+          color: const Color(0xFF090D1A),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFF202B47), width: 0.8),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -719,14 +797,14 @@ class _RepRowState extends State<_RepRow> {
             Row(
               children: [
                 Icon(icon, color: color, size: 14),
-                const SizedBox(width: 4),
+                const SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    label,
+                    label.toUpperCase(),
                     style: GoogleFonts.outfit(
                       color: const Color(0xFF64748B),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -734,21 +812,22 @@ class _RepRowState extends State<_RepRow> {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               value,
               style: GoogleFonts.outfit(
-                color: const Color(0xFF0F172A),
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               subLabel,
               style: GoogleFonts.outfit(
-                color: const Color(0xFF94A3B8),
+                color: const Color(0xFF475569),
                 fontSize: 9,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],

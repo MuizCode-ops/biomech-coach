@@ -1,5 +1,5 @@
 // lib/screens/home_screen.dart
-// Home screen — clean light theme, Squat as hero, Bench/Deadlift as Coming Soon.
+// Home screen — Premium Dark NBA-Style Theme with live scoreboard elements.
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,9 +13,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFF090D1A), // Midnight Obsidian Navy
       body: SafeArea(
         child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(child: _buildHeader(context)),
             SliverToBoxAdapter(child: _buildGreeting()),
@@ -29,53 +30,80 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ── Header ─────────────────────────────
+  // ── Header (NBA inspired style) ─────────────────────────────
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 16, 0),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Row(
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
               Text(
-                'Good workout! 💪',
+                'BIOMECH',
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF64748B),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
                 ),
               ),
-              Text(
-                'Biomech Coach',
-                style: GoogleFonts.outfit(
-                  color: const Color(0xFF0F172A),
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF1D428A), Color(0xFFC9082A)], // NBA Blue & Red split
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+                child: Text(
+                  'COACH',
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0,
+                  ),
                 ),
               ),
             ],
           ),
           const Spacer(),
-          // Journal button
+          // Stats/Journal button (Scoreboard style)
           GestureDetector(
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const JournalScreen()),
             ),
             child: Container(
-              width: 44,
-              height: 44,
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+                color: const Color(0xFF161F38),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF263254), width: 1),
               ),
-              child: const Icon(
-                Icons.bar_chart_rounded,
-                color: Color(0xFF2563EB),
-                size: 22,
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.analytics_rounded,
+                    color: Color(0xFF2F80ED),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'JOURNAL',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -84,7 +112,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ── Greeting / tagline ─────────────────
+  // ── Greeting/Live Feed alert ticker ─────────────────
 
   Widget _buildGreeting() {
     return Padding(
@@ -92,46 +120,37 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF2563EB).withValues(alpha: 0.06),
+          color: const Color(0xFF161F38),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFF2563EB).withValues(alpha: 0.12),
+            color: const Color(0xFF263254),
             width: 1,
           ),
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: const Color(0xFF2563EB).withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(
-                Icons.auto_awesome_rounded,
-                color: Color(0xFF2563EB),
-                size: 20,
-              ),
-            ),
+            const _BlinkingLiveDot(),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'AI-Powered Form Analysis',
+                    'EDGE-AI FEED ACTIVE',
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFF2563EB),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF10B981),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
-                    'Real-time pose tracking · On-device · No internet',
+                    'Pose tracker running locally. Zero cloud lag.',
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFF64748B),
-                      fontSize: 11,
+                      color: const Color(0xFF94A3B8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -143,34 +162,32 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ── Squat Hero Card ────────────────────
+  // ── Active Lifts (Match Cards Style) ────────────────────
 
   Widget _buildActiveLifts(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'ACTIVE LIFTS',
+            'ACTIVE GAME MODES',
             style: GoogleFonts.outfit(
-              color: const Color(0xFF94A3B8),
+              color: const Color(0xFF475569),
               fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.8,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2.0,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           _LiftHeroCard(
             liftType: LiftType.squat,
-            subtitle: 'Hip crease depth · Knee tracking · Full lockout',
-            themeColor: const Color(0xFF2563EB),
+            subtitle: 'Checks hip crease depth & knee alignment.',
+            themeColor: const Color(0xFF1D428A), // NBA Blue
             checkpoints: const [
               'Hip angle < 90°',
-              'Knee valgus detection',
-              'IPF depth standard',
-              'Rep counting',
-              'Audio coaching',
+              'Knee valgus alarm',
+              'Lockout verification',
             ],
             onTap: () => Navigator.push(
               context,
@@ -182,14 +199,12 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _LiftHeroCard(
             liftType: LiftType.benchPress,
-            subtitle: 'Elbow flexion depth · Lockout detection · Wrist tracking',
-            themeColor: const Color(0xFFEF4444),
+            subtitle: 'Tracks elbow extension, chest touch & bar pause.',
+            themeColor: const Color(0xFFC9082A), // NBA Red
             checkpoints: const [
+              'Chest touch check',
               'Elbow angle < 90°',
-              'Bar to chest detection',
-              'Wrist-elbow alignment',
-              'Rep counting',
-              'Audio coaching',
+              'Elbow lockout check',
             ],
             onTap: () => Navigator.push(
               context,
@@ -207,14 +222,14 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildComingSoonLabel() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 28, 24, 10),
+      padding: const EdgeInsets.fromLTRB(24, 28, 24, 12),
       child: Text(
-        'COMING SOON',
+        'LOCKED MODES',
         style: GoogleFonts.outfit(
-          color: const Color(0xFF94A3B8),
+          color: const Color(0xFF475569),
           fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.8,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 2.0,
         ),
       ),
     );
@@ -238,20 +253,72 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildFooter() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+      padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.lock_outline_rounded,
+          const Icon(Icons.shield_rounded,
               color: Color(0xFF10B981), size: 14),
           const SizedBox(width: 6),
           Text(
-            'All data stays on your device',
+            'Secure Offline Processing Active',
             style: GoogleFonts.outfit(
-              color: const Color(0xFF94A3B8),
+              color: const Color(0xFF475569),
               fontSize: 12,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ── Blinking Live Dot Widget ──────────────────────────────────────────
+
+class _BlinkingLiveDot extends StatefulWidget {
+  const _BlinkingLiveDot();
+
+  @override
+  State<_BlinkingLiveDot> createState() => _BlinkingLiveDotState();
+}
+
+class _BlinkingLiveDotState extends State<_BlinkingLiveDot>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 900))
+      ..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _ctrl,
+      child: Container(
+        width: 10,
+        height: 10,
+        decoration: const BoxDecoration(
+          color: Color(0xFF10B981),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFF10B981),
+              blurRadius: 6,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -287,8 +354,8 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 120));
-    _scale = Tween<double>(begin: 1.0, end: 0.975)
+        vsync: this, duration: const Duration(milliseconds: 100));
+    _scale = Tween<double>(begin: 1.0, end: 0.98)
         .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeIn));
   }
 
@@ -300,6 +367,12 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
 
   @override
   Widget build(BuildContext context) {
+    final abbreviation = widget.liftType == LiftType.squat
+        ? 'SQT'
+        : widget.liftType == LiftType.benchPress
+            ? 'B.P'
+            : 'DL';
+
     return ScaleTransition(
       scale: _scale,
       child: GestureDetector(
@@ -312,40 +385,43 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: const Border.fromBorderSide(
-                BorderSide(color: Color(0xFFE2E8F0), width: 1)),
-            boxShadow: [
-              BoxShadow(
-                color: widget.themeColor.withValues(alpha: 0.08),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            color: const Color(0xFF111625), // Cleaner darker card navy
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFF202B47), width: 1.0),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Top section
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(18),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Icon container
+                    // Typographic team abbreviation-like badge
                     Container(
-                      width: 64,
-                      height: 64,
+                      width: 54,
+                      height: 54,
                       decoration: BoxDecoration(
-                        color: widget.themeColor.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(18),
+                        color: const Color(0xFF090D1A),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: widget.themeColor.withValues(alpha: 0.7),
+                            width: 2.0),
                       ),
                       child: Center(
-                        child: Text(widget.liftType.emoji, style: const TextStyle(fontSize: 32)),
+                        child: Text(
+                          abbreviation,
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,28 +429,32 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                           Row(
                             children: [
                               Text(
-                                widget.liftType.displayName,
+                                widget.liftType.displayName.toUpperCase(),
                                 style: GoogleFonts.outfit(
-                                  color: const Color(0xFF0F172A),
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 2),
+                                    horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                      color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                                      width: 0.8),
                                 ),
                                 child: Text(
-                                  'ACTIVE',
+                                  'READY',
                                   style: GoogleFonts.outfit(
                                     color: const Color(0xFF10B981),
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.8,
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.5,
                                   ),
                                 ),
                               ),
@@ -384,8 +464,9 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                           Text(
                             widget.subtitle,
                             style: GoogleFonts.outfit(
-                              color: const Color(0xFF64748B),
-                              fontSize: 13,
+                              color: const Color(0xFF94A3B8),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -395,49 +476,51 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                 ),
               ),
 
-              // Checkpoints
+              // Checkpoints (styled as mini stats indicators)
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: Wrap(
-                  spacing: 8,
+                  spacing: 6,
                   runSpacing: 6,
                   children: widget.checkpoints
-                      .map((label) => _Checkpoint(label: label, color: widget.themeColor))
+                      .map((label) => _Checkpoint(
+                          label: label.toUpperCase(), color: widget.themeColor))
                       .toList(),
                 ),
               ),
 
               // Divider
               const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Divider(color: Color(0xFFF1F5F9), height: 1),
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                child: Divider(color: Color(0xFF1E2842), height: 1),
               ),
 
               // Start button row
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
                 child: Row(
                   children: [
                     Expanded(
                       child: Container(
-                        height: 50,
+                        height: 44,
                         decoration: BoxDecoration(
                           color: widget.themeColor,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Icon(Icons.play_arrow_rounded,
-                                  color: Colors.white, size: 22),
+                                  color: Colors.white, size: 18),
                               const SizedBox(width: 6),
                               Text(
-                                'Start Session',
+                                'START GAME SCAN',
                                 style: GoogleFonts.outfit(
                                   color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
                                 ),
                               ),
                             ],
@@ -447,16 +530,17 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                     ),
                     const SizedBox(width: 10),
                     Container(
-                      width: 50,
-                      height: 50,
+                      width: 44,
+                      height: 44,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
-                        borderRadius: BorderRadius.circular(14),
+                        color: const Color(0xFF161F38),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: const Color(0xFF202B47), width: 1),
                       ),
                       child: const Icon(
-                        Icons.camera_front_rounded,
-                        color: Color(0xFF64748B),
-                        size: 22,
+                        Icons.videocam_rounded,
+                        color: Color(0xFF94A3B8),
+                        size: 18,
                       ),
                     ),
                   ],
@@ -470,7 +554,7 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
   }
 }
 
-// ── Checkpoint chip ──────────────────────────────────────────
+// ── Checkpoint chip (Scoreboard badge style) ──────────────────────────────────────────
 
 class _Checkpoint extends StatelessWidget {
   final String label;
@@ -480,25 +564,40 @@ class _Checkpoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
+        color: const Color(0xFF090D1A),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withValues(alpha: 0.25), width: 1),
       ),
-      child: Text(
-        label,
-        style: GoogleFonts.outfit(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 4,
+            height: 4,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: GoogleFonts.outfit(
+              color: const Color(0xFF94A3B8),
+              fontSize: 9,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// ── Coming Soon Card ───────────────────────────────────────
+// ── Coming Soon Card (Locked Game Card style) ───────────────────────────────────────
 
 class _ComingSoonCard extends StatelessWidget {
   final LiftType lift;
@@ -509,12 +608,11 @@ class _ComingSoonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: const Border.fromBorderSide(
-            BorderSide(color: Color(0xFFE2E8F0), width: 1)),
+        color: const Color(0xFF0B0E17), // Even darker for locked cards
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFF161F38), width: 1.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -522,49 +620,65 @@ class _ComingSoonCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(lift.emoji, style: const TextStyle(fontSize: 26)),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(6),
+                  color: const Color(0xFF05070D),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFF161F38), width: 1.5),
+                ),
+                child: Center(
+                  child: Text(
+                    'DL',
+                    style: GoogleFonts.outfit(
+                      color: const Color(0xFF475569),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF161F38),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: const Color(0xFF202B47), width: 0.8),
                 ),
                 child: Text(
-                  'SOON',
+                  'LOCKED',
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFF94A3B8),
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF64748B),
+                    fontSize: 8,
+                    fontWeight: FontWeight.w900,
                     letterSpacing: 0.8,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Text(
-            lift.displayName,
+            lift.displayName.toUpperCase(),
             style: GoogleFonts.outfit(
-              color: const Color(0xFFCBD5E1),
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
+              color: const Color(0xFF475569),
+              fontSize: 14,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.5,
             ),
           ),
           const SizedBox(height: 4),
           Text(
-            lift == LiftType.benchPress
-                ? 'Elbow angle & press depth'
-                : 'Hip hinge & back angle',
+            'Hip hinge & lumbar curve tracking',
             style: GoogleFonts.outfit(
-              color: const Color(0xFFCBD5E1),
+              color: const Color(0xFF334155),
               fontSize: 11,
+              fontWeight: FontWeight.w500,
             ),
-            maxLines: 2,
           ),
         ],
       ),
     );
   }
 }
-
-

@@ -131,9 +131,25 @@ class BiomechanicsEngine {
     return calculateAngle(shoulder, elbow, wrist);
   }
 
-  /// Average elbow angle across both arms
+  /// Average elbow angle across both arms.
+  /// Uses isVisible() to exclude occluded arms so a fake 180° doesn't pollute the average.
   static double benchAvgElbowAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    return (benchElbowAngle(lm) + benchElbowAngleRight(lm)) / 2.0;
+    final leftVisible = isVisible(lm[PoseLandmarkType.leftShoulder]) &&
+        isVisible(lm[PoseLandmarkType.leftElbow]) &&
+        isVisible(lm[PoseLandmarkType.leftWrist]);
+    final rightVisible = isVisible(lm[PoseLandmarkType.rightShoulder]) &&
+        isVisible(lm[PoseLandmarkType.rightElbow]) &&
+        isVisible(lm[PoseLandmarkType.rightWrist]);
+
+    if (leftVisible && rightVisible) {
+      return (benchElbowAngle(lm) + benchElbowAngleRight(lm)) / 2.0;
+    } else if (leftVisible) {
+      return benchElbowAngle(lm);
+    } else if (rightVisible) {
+      return benchElbowAngleRight(lm);
+    } else {
+      return 180.0;
+    }
   }
 
   // ──────────────────────────────────────────

@@ -1,5 +1,5 @@
 // lib/screens/journal_screen.dart
-// Training journal — clean white light theme.
+// Training journal — Premium Dark NBA-Style Theme with scoreboard boxes and stats.
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +19,7 @@ class JournalScreen extends StatefulWidget {
 
 class _JournalScreenState extends State<JournalScreen> {
   List<LiftSession> _sessions = [];
+  String? _selectedLiftType; // 'benchPress', 'squat', 'deadlift', or null for all
 
   @override
   void initState() {
@@ -71,21 +72,27 @@ class _JournalScreenState extends State<JournalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final filtered = _selectedLiftType == null
+        ? _sessions
+        : _sessions.where((s) => s.liftType == _selectedLiftType).toList();
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFF090D1A), // Midnight Obsidian Navy
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(context),
-            const SizedBox(height: 20),
-            _buildOverallStats(),
-            const SizedBox(height: 20),
-            if (_sessions.length >= 2) ...[
-              _buildTrendChart(),
-              const SizedBox(height: 20),
+            const SizedBox(height: 16),
+            _buildCategoryTabs(),
+            const SizedBox(height: 16),
+            _buildOverallStats(filtered),
+            const SizedBox(height: 16),
+            if (filtered.length >= 2) ...[
+              _buildTrendChart(filtered),
+              const SizedBox(height: 16),
             ],
-            Expanded(child: _buildSessionList()),
+            Expanded(child: _buildSessionList(filtered)),
           ],
         ),
       ),
@@ -94,70 +101,256 @@ class _JournalScreenState extends State<JournalScreen> {
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 16, 0),
+      padding: const EdgeInsets.fromLTRB(24, 20, 16, 0),
       child: Row(
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'TRAINING LOG',
+                'TRAINING HISTORIES',
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF94A3B8),
+                  color: const Color(0xFF475569),
                   fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: 2.0,
                 ),
               ),
               Text(
                 'Journal',
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF0F172A),
+                  color: Colors.white,
                   fontSize: 28,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ],
           ),
           const Spacer(),
+          // Import/Export buttons (Game menu style)
           IconButton(
             icon: const Icon(Icons.download_rounded,
-                color: Color(0xFF64748B), size: 22),
+                color: Color(0xFF94A3B8), size: 22),
             tooltip: 'Import Backup',
             onPressed: _importBackup,
           ),
           IconButton(
             icon: const Icon(Icons.upload_rounded,
-                color: Color(0xFF64748B), size: 22),
+                color: Color(0xFF94A3B8), size: 22),
             tooltip: 'Export Backup',
             onPressed: _exportBackup,
           ),
           const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                color: Color(0xFF64748B), size: 20),
-            onPressed: () => Navigator.pop(context),
+          // Back button
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: const Color(0xFF161F38),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFF263254), width: 1),
+              ),
+              child: const Icon(Icons.chevron_left_rounded,
+                  color: Colors.white, size: 22),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildOverallStats() {
-    final totalSessions = _sessions.length;
-    final totalReps = DatabaseService.instance.totalValidReps;
-    final totalBadReps = DatabaseService.instance.totalInvalidReps;
-    final avgScore =
-        DatabaseService.instance.overallAverageFormScore;
+  Widget _buildCategoryTabs() {
+    final benchPressSessions = _sessions.where((s) => s.liftType == 'benchPress').toList();
+    final squatSessions = _sessions.where((s) => s.liftType == 'squat').toList();
+    final deadliftSessions = _sessions.where((s) => s.liftType == 'deadlift').toList();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _buildCategoryCard(
+                  title: 'B.P',
+                  fullName: 'Bench Press',
+                  emoji: '🤸',
+                  sessionCount: benchPressSessions.length,
+                  typeKey: 'benchPress',
+                  accentColor: const Color(0xFFC9082A), // NBA Red
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildCategoryCard(
+                  title: 'Squat',
+                  fullName: 'Squat',
+                  emoji: '🏋️',
+                  sessionCount: squatSessions.length,
+                  typeKey: 'squat',
+                  accentColor: const Color(0xFF10B981), // Emerald
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildCategoryCard(
+            title: 'Deadlift',
+            fullName: 'Deadlift',
+            emoji: '💪',
+            sessionCount: deadliftSessions.length,
+            typeKey: 'deadlift',
+            accentColor: const Color(0xFF1D428A), // NBA Blue
+            isFullWidth: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryCard({
+    required String title,
+    required String fullName,
+    required String emoji,
+    required int sessionCount,
+    required String typeKey,
+    required Color accentColor,
+    bool isFullWidth = false,
+  }) {
+    final isSelected = _selectedLiftType == typeKey;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (_selectedLiftType == typeKey) {
+            _selectedLiftType = null;
+          } else {
+            _selectedLiftType = typeKey;
+          }
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        padding: EdgeInsets.symmetric(
+          horizontal: isFullWidth ? 20 : 12,
+          vertical: 14,
+        ),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF1E294B) : const Color(0xFF161F38),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? accentColor : const Color(0xFF263254),
+            width: isSelected ? 2.0 : 1.0,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: accentColor.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  )
+                ]
+              : [],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: const Color(0xFF0F1524),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? accentColor : const Color(0xFF263254),
+                  width: 1.0,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  emoji,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title.toUpperCase(),
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '$sessionCount Games',
+                    style: GoogleFonts.outfit(
+                      color: isSelected ? Colors.white70 : const Color(0xFF64748B),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 4),
+              Icon(
+                Icons.check_circle_rounded,
+                color: accentColor,
+                size: 18,
+              ),
+            ] else if (isFullWidth) ...[
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: Color(0xFF64748B),
+                size: 18,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverallStats(List<LiftSession> displayedSessions) {
+    final totalSessions = displayedSessions.length;
+    int totalReps = 0;
+    int totalBadReps = 0;
+    double totalScoreSum = 0;
+    int ratedSessionsCount = 0;
+
+    for (var session in displayedSessions) {
+      totalReps += session.validReps;
+      totalBadReps += session.invalidReps;
+      if (session.reps.isNotEmpty) {
+        totalScoreSum += session.averageFormScore;
+        ratedSessionsCount++;
+      }
+    }
+
+    final avgScore = ratedSessionsCount == 0 ? 0.0 : totalScoreSum / ratedSessionsCount;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
           _StatCard(
               value: '$totalSessions',
-              label: 'Sessions',
-              color: const Color(0xFF2563EB)),
+              label: 'Games',
+              color: const Color(0xFF1D428A)), // NBA Blue
           const SizedBox(width: 8),
           _StatCard(
               value: '$totalReps',
@@ -167,7 +360,7 @@ class _JournalScreenState extends State<JournalScreen> {
           _StatCard(
               value: '$totalBadReps',
               label: 'Bad Form',
-              color: const Color(0xFFEF4444)),
+              color: const Color(0xFFC9082A)), // NBA Red
           const SizedBox(width: 8),
           _StatCard(
               value: '${avgScore.toStringAsFixed(0)}%',
@@ -178,28 +371,31 @@ class _JournalScreenState extends State<JournalScreen> {
     );
   }
 
-  Widget _buildTrendChart() {
-    final scores = DatabaseService.instance.getFormScoreTrend(limit: 10);
+  Widget _buildTrendChart(List<LiftSession> displayedSessions) {
+    final sorted = List<LiftSession>.from(displayedSessions)
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    final scores = sorted.map((s) => s.averageFormScore).toList();
+    final trendScores = scores.length > 10 ? scores.sublist(scores.length - 10) : scores;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF161F38),
           borderRadius: BorderRadius.circular(18),
-          border: const Border.fromBorderSide(
-              BorderSide(color: Color(0xFFE2E8F0), width: 1)),
+          border: Border.all(color: const Color(0xFF263254), width: 1.2),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Form Score Trend',
+              'FORM SCORE TREND',
               style: GoogleFonts.outfit(
-                color: const Color(0xFF0F172A),
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.0,
               ),
             ),
             const SizedBox(height: 14),
@@ -214,19 +410,19 @@ class _JournalScreenState extends State<JournalScreen> {
                   titlesData: const FlTitlesData(show: false),
                   lineBarsData: [
                     LineChartBarData(
-                      spots: scores
+                      spots: trendScores
                           .asMap()
                           .entries
                           .map((e) =>
                               FlSpot(e.key.toDouble(), e.value))
                           .toList(),
                       isCurved: true,
-                      color: const Color(0xFF2563EB),
-                      barWidth: 2.5,
+                      color: const Color(0xFF2F80ED),
+                      barWidth: 3,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: const Color(0xFF2563EB).withValues(alpha: 0.06),
+                        color: const Color(0xFF2F80ED).withValues(alpha: 0.12),
                       ),
                     ),
                   ],
@@ -239,28 +435,31 @@ class _JournalScreenState extends State<JournalScreen> {
     );
   }
 
-  Widget _buildSessionList() {
-    if (_sessions.isEmpty) {
+  Widget _buildSessionList(List<LiftSession> displayedSessions) {
+    if (displayedSessions.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('📋', style: TextStyle(fontSize: 44)),
+            const Text('🏆', style: TextStyle(fontSize: 48)),
             const SizedBox(height: 16),
             Text(
-              'No sessions yet',
+              _selectedLiftType == null
+                  ? 'No training games logged'
+                  : 'No ${_selectedLiftType == 'benchPress' ? 'Bench Press' : _selectedLiftType == 'squat' ? 'Squat' : 'Deadlift'} games logged',
               style: GoogleFonts.outfit(
-                color: const Color(0xFF0F172A),
+                color: Colors.white,
                 fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              'Complete a session to see your history.',
+              'Complete a session scan to start tracking history.',
               style: GoogleFonts.outfit(
-                color: const Color(0xFF94A3B8),
+                color: const Color(0xFF64748B),
                 fontSize: 13,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -269,14 +468,15 @@ class _JournalScreenState extends State<JournalScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      itemCount: _sessions.length,
-      itemBuilder: (_, i) => _SessionCard(session: _sessions[i]),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+      itemCount: displayedSessions.length,
+      itemBuilder: (_, i) => _SessionCard(session: displayedSessions[i]),
     );
   }
 }
 
-// ── Stat card ─────────────────────────────────────────────────
+// ── Stat card (Score box style) ─────────────────────────────────────────────────
 
 class _StatCard extends StatelessWidget {
   final String value;
@@ -289,12 +489,11 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: const Border.fromBorderSide(
-              BorderSide(color: Color(0xFFE2E8F0), width: 1)),
+          color: const Color(0xFF0F172A),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFF1E293B), width: 1.0),
         ),
         child: Column(
           children: [
@@ -302,15 +501,18 @@ class _StatCard extends StatelessWidget {
               value,
               style: GoogleFonts.outfit(
                 color: color,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
               ),
             ),
+            const SizedBox(height: 2),
             Text(
-              label,
+              label.toUpperCase(),
               style: GoogleFonts.outfit(
-                color: const Color(0xFF94A3B8),
-                fontSize: 11,
+                color: const Color(0xFF64748B),
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
               ),
             ),
           ],
@@ -320,7 +522,7 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// ── Session card ──────────────────────────────────────────────
+// ── Session card (Match Score Card style) ──────────────────────────────────────────────
 
 class _SessionCard extends StatelessWidget {
   final LiftSession session;
@@ -330,6 +532,28 @@ class _SessionCard extends StatelessWidget {
         (l) => l.name == session.liftType,
         orElse: () => LiftType.squat,
       );
+
+  String get _abbreviation {
+    switch (_liftType) {
+      case LiftType.squat:
+        return 'SQT';
+      case LiftType.benchPress:
+        return 'B.P';
+      case LiftType.deadlift:
+        return 'DL';
+    }
+  }
+
+  Color get _themeColor {
+    switch (_liftType) {
+      case LiftType.squat:
+        return const Color(0xFF10B981);
+      case LiftType.benchPress:
+        return const Color(0xFFC9082A);
+      case LiftType.deadlift:
+        return const Color(0xFF1D428A);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -351,81 +575,115 @@ class _SessionCard extends StatelessWidget {
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: const Border.fromBorderSide(
-            BorderSide(color: Color(0xFFE2E8F0), width: 1)),
-      ),
-      child: Row(
-        children: [
-          // Emoji
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Center(
-              child: Text(_liftType.emoji,
-                  style: const TextStyle(fontSize: 22)),
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Text
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _liftType.displayName,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xFF111625),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF202B47), width: 1.0),
+        ),
+        child: Row(
+          children: [
+            // Typographic team-like badge
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFF090D1A),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: _themeColor.withValues(alpha: 0.7),
+                  width: 1.5,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  _abbreviation,
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFF0F172A),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
                   ),
                 ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Text details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _liftType.displayName.toUpperCase(),
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${session.formattedDate}  ·  ${session.formattedDuration}',
+                    style: GoogleFonts.outfit(
+                      color: const Color(0xFF64748B),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Sport game status indicator
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0xFF090D1A),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: const Color(0xFF202B47), width: 0.8),
+              ),
+              child: Text(
+                'FINAL',
+                style: GoogleFonts.outfit(
+                  color: const Color(0xFF64748B),
+                  fontSize: 8,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Stats column
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Text(
-                  '${session.formattedDate}  ·  ${session.formattedDuration}',
+                  session.invalidReps > 0
+                      ? '${session.validReps} W - ${session.invalidReps} L'
+                      : '${session.totalReps} REPS',
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFF94A3B8),
+                    color: session.invalidReps > 0
+                        ? const Color(0xFFC9082A)
+                        : const Color(0xFF10B981),
+                    fontWeight: FontWeight.w900,
                     fontSize: 12,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${session.averageFormScore.toStringAsFixed(0)}% PCT',
+                  style: GoogleFonts.outfit(
+                    color: scoreColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
             ),
-          ),
-          // Stats
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                session.invalidReps > 0
-                    ? '${session.validReps} valid · ${session.invalidReps} bad'
-                    : '${session.totalReps} reps',
-                style: GoogleFonts.outfit(
-                  color: session.invalidReps > 0
-                      ? const Color(0xFFEF4444)
-                      : const Color(0xFF10B981),
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
-                ),
-              ),
-              Text(
-                '${session.averageFormScore.toStringAsFixed(0)}% form',
-                style: GoogleFonts.outfit(
-                  color: scoreColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

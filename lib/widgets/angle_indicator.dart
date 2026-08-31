@@ -1,5 +1,5 @@
 // lib/widgets/angle_indicator.dart
-// Real-time joint angle display widget — clean light theme.
+// Real-time joint angle display widget — Premium Dark HUD theme.
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,18 +22,18 @@ class AngleIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = isGood ? const Color(0xFF10B981) : const Color(0xFFEF4444);
     final bgColor = isGood
-        ? const Color(0xFF10B981).withValues(alpha: 0.08)
-        : const Color(0xFFEF4444).withValues(alpha: 0.08);
+        ? const Color(0xFF10B981).withValues(alpha: 0.15)
+        : const Color(0xFFEF4444).withValues(alpha: 0.15);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
+        color: const Color(0xFF161F38).withValues(alpha: 0.85), // Dark Slate Navy Glass
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.25), width: 1.5),
+        border: Border.all(color: color.withValues(alpha: 0.45), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -47,34 +47,36 @@ class AngleIndicator extends StatelessWidget {
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: color.withValues(alpha: 0.3), width: 0.8),
             ),
             child: Text(
               label,
               style: GoogleFonts.outfit(
                 color: color,
                 fontSize: 10,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w900,
                 letterSpacing: 1.0,
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             '${angle.toStringAsFixed(0)}°',
             style: GoogleFonts.outfit(
-              color: const Color(0xFF0F172A),
+              color: Colors.white,
               fontSize: 26,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w900,
               height: 1.0,
             ),
           ),
           if (targetAngle != null) ...[
-            const SizedBox(height: 3),
+            const SizedBox(height: 4),
             Text(
-              'target ≤ ${targetAngle!.toStringAsFixed(0)}°',
+              'REQ ≤ ${targetAngle!.toStringAsFixed(0)}°',
               style: GoogleFonts.outfit(
-                color: const Color(0xFF94A3B8),
-                fontSize: 10,
+                color: const Color(0xFF64748B),
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ],

@@ -49,6 +49,7 @@ abstract class RepStateMachine {
   RepState get state => _state;
 
   double _minPrimaryAngle = 180.0; // lowest angle reached (depth)
+  double _prevAngle = 180.0;       // previous frame angle — used for direction reversal
   double _lockoutAngle = 0.0;
   final List<String> _faults = [];
   DateTime? _repStartTime;
@@ -109,6 +110,7 @@ abstract class RepStateMachine {
     // Reset for next rep
     _faults.clear();
     _minPrimaryAngle = 180.0;
+    _prevAngle = 180.0;
     _lockoutAngle = 0.0;
     _repStartTime = null;
     _transition(RepState.idle);
@@ -124,6 +126,7 @@ abstract class RepStateMachine {
     _state = RepState.idle;
     _faults.clear();
     _minPrimaryAngle = 180.0;
+    _prevAngle = 180.0;
     _lockoutAngle = 0.0;
     _repStartTime = null;
   }
@@ -165,10 +168,11 @@ class SquatStateMachine extends RepStateMachine {
         }
 
       case RepState.descending:
-        // Valid depth: hip angle < 90°
-        if (primaryAngle <= LiftThresholds.squatDepthHipAngle) {
+        // Detect bottom by direction reversal (angle stops falling and starts rising)
+        if (primaryAngle > _prevAngle) {
           _transition(RepState.atDepth);
         }
+        _prevAngle = primaryAngle;
 
       case RepState.atDepth:
         // Start ascending when angle increases by > 10°
@@ -222,9 +226,11 @@ class BenchStateMachine extends RepStateMachine {
         }
 
       case RepState.descending:
-        if (primaryAngle <= LiftThresholds.benchBottomElbowAngle) {
+        // Detect bottom by direction reversal (angle stops falling and starts rising)
+        if (primaryAngle > _prevAngle) {
           _transition(RepState.atDepth);
         }
+        _prevAngle = primaryAngle;
 
       case RepState.atDepth:
         if (primaryAngle > _minPrimaryAngle + 10.0) {
@@ -238,8 +244,9 @@ class BenchStateMachine extends RepStateMachine {
         if (primaryAngle >= LiftThresholds.benchLockoutElbowAngle) {
           _lockoutAngle = primaryAngle;
           _transition(RepState.lockout);
-        } else if (primaryAngle < 120.0 && _minPrimaryAngle > 80.0) {
-          _addFault('Full lockout!');
+        } else if (primaryAngle < LiftThresholds.benchAscendShallowCheckAngle &&
+            _minPrimaryAngle > LiftThresholds.benchMinDepthForShallowCheck) {
+          _addFault('Not deep enough!');
         }
 
       case RepState.lockout:
@@ -286,9 +293,11 @@ class DeadliftStateMachine extends RepStateMachine {
         }
 
       case RepState.descending:
-        if (primaryAngle <= LiftThresholds.deadliftBottomHipAngle) {
+        // Detect bottom by direction reversal (angle stops falling and starts rising)
+        if (primaryAngle > _prevAngle) {
           _transition(RepState.atDepth);
         }
+        _prevAngle = primaryAngle;
 
       case RepState.atDepth:
         if (primaryAngle > _minPrimaryAngle + 10.0) {

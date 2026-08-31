@@ -131,7 +131,9 @@ class _CameraScreenState extends State<CameraScreen>
       _cameras[index],
       ResolutionPreset.high,
       enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.bgra8888,
+      imageFormatGroup: Platform.isIOS
+          ? ImageFormatGroup.bgra8888
+          : ImageFormatGroup.nv21,
     );
 
     await _cameraController!.initialize();
@@ -476,6 +478,7 @@ class _CameraScreenState extends State<CameraScreen>
       validReps: _stateMachine!.validRepCount,
       totalReps: _stateMachine!.totalRepCount,
       state: _stateMachine!.state,
+      liftType: widget.liftType,
     );
   }
 
