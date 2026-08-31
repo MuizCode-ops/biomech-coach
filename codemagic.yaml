@@ -1,55 +1,35 @@
 workflows:
-  ios-adhoc:
-    name: iOS Ad Hoc (Install on iPhone)
+  ios-unsigned:
+    name: iOS Unsigned (Sideloadly Install)
     max_build_duration: 60
     environment:
       flutter: stable
       xcode: latest
       cocoapods: default
-      vars:
-        BUNDLE_ID: "com.biomechcoach.app"
-      ios_signing:
-        distribution_type: ad_hoc
-        bundle_identifier: com.biomechcoach.app
-
     triggering:
       events:
         - push
       branch_pattern:
         pattern: main
         include: true
-
     scripts:
-      - name: Register iPhone UDID & fetch signing files
-        script: |
-          keychain initialize
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_ADHOC \
-            --create
-          keychain add-certificates
-          xcode-project use-profiles
-
       - name: Get Flutter packages
-        script: |
-          flutter pub get
-
+        script: flutter pub get
       - name: Install CocoaPods
         script: |
           find . -name "Podfile" -execdir pod install \;
-
-      - name: Flutter build iOS (Ad Hoc)
+      - name: Flutter build iOS (no codesign)
         script: |
           flutter build ios --release --no-codesign
-          xcode-project build-ipa \
-            --workspace "ios/Runner.xcworkspace" \
-            --scheme "Runner" \
-            --archive-flags="-destination 'generic/platform=iOS'"
-
+      - name: Package unsigned IPA
+        script: |
+          cd build/ios/iphoneos
+          mkdir -p Payload
+          cp -r Runner.app Payload/
+          zip -r biomech-coach-unsigned.ipa Payload
     artifacts:
-      - build/ios/ipa/*.ipa
+      - build/ios/iphoneos/*.ipa
       - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
-
     publishing:
       email:
         recipients:
@@ -58,32 +38,18 @@ workflows:
           success: true
           failure: true
 
-  # ── Uncomment below to also publish to TestFlight later ──
-  # ios-testflight:
-  #   name: iOS TestFlight
-  #   environment:
-  #     ...
-  #   publishing:
-  #     app_store_connect:
-  #       auth: integration
-  #       submit_to_testflight: true
-
   android-debug:
     name: Android Debug (Testing)
     max_build_duration: 30
     environment:
       flutter: stable
-
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
-
       - name: Build APK
         script: flutter build apk --debug
-
     artifacts:
       - build/**/outputs/**/*.apk
-    
     publishing:
       email:
         recipients:
