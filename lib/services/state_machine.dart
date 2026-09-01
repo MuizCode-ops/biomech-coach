@@ -263,6 +263,9 @@ class BenchStateMachine extends RepStateMachine {
   String get _startCueText => 'Start!';
 
   @override
+  bool get _requiresRackCue => false;
+
+  @override
   double get _depthThreshold => LiftThresholds.benchBottomElbowAngle;
 
   @override
@@ -342,85 +345,6 @@ class BenchStateMachine extends RepStateMachine {
   }
 }
 
-// ──────────────────────────────────────────────────
-//  DEADLIFT State Machine
-// ──────────────────────────────────────────────────
-class DeadliftStateMachine extends RepStateMachine {
-  @override
-  double get _depthThreshold => LiftThresholds.deadliftBottomHipAngle;
-
-  @override
-  double get _lockoutThreshold => LiftThresholds.deadliftLockoutHipAngle;
-
-  @override
-  void update(double primaryAngle, Map<String, double> secondaryAngles) {
-    // primaryAngle = hip angle
-    final kneeAngle = secondaryAngles['knee'] ?? 180.0;
-    final backAngle = secondaryAngles['back'] ?? 0.0;
-
-    if (primaryAngle < _minPrimaryAngle) {
-      _minPrimaryAngle = primaryAngle;
-    }
-
-    // Back rounding check
-    if (backAngle > LiftThresholds.deadliftMaxBackRound &&
-        state != RepState.idle) {
-      _addFault('Back rounding!');
-    }
-
-    switch (state) {
-      case RepState.idle:
-        // Wait for stability, then give start cue before allowing descent
-        if (!_squatCueGiven) {
-          if (_isStable(primaryAngle)) {
-            onCoachingCue?.call(_startCueText);
-            _squatCueGiven = true;
-            _stabilityBuffer.clear();
-          }
-        } else if (primaryAngle < LiftThresholds.deadliftStartHipAngle) {
-          _repStartTime = DateTime.now();
-          _transition(RepState.descending);
-        }
-
-      case RepState.descending:
-        // Detect bottom by direction reversal (angle stops falling and starts rising)
-        if (primaryAngle > _prevAngle) {
-          _transition(RepState.atDepth);
-        }
-        _prevAngle = primaryAngle;
-
-      case RepState.atDepth:
-        if (primaryAngle > _minPrimaryAngle + 10.0) {
-          _transition(RepState.ascending);
-        }
-
-      case RepState.ascending:
-        if (primaryAngle >= LiftThresholds.deadliftLockoutHipAngle &&
-            kneeAngle >= LiftThresholds.deadliftLockoutKneeAngle) {
-          _lockoutAngle = primaryAngle;
-          _transition(RepState.lockout);
-        }
-
-      case RepState.lockout:
-        if (!_requiresRackCue) {
-          _completeRep(primaryAngle);
-          return;
-        }
-        if (_isStable(primaryAngle)) {
-          if (!_rackCueGiven) {
-            onCoachingCue?.call('Rack!');
-            _rackCueGiven = true;
-            return;
-          }
-          _completeRep(_lockoutAngle);
-        }
-
-      case RepState.complete:
-        break;
-    }
-  }
-}
-
 /// Factory to get the right state machine for a lift type.
 RepStateMachine createStateMachine(LiftType liftType) {
   switch (liftType) {
@@ -428,7 +352,5 @@ RepStateMachine createStateMachine(LiftType liftType) {
       return SquatStateMachine();
     case LiftType.benchPress:
       return BenchStateMachine();
-    case LiftType.deadlift:
-      return DeadliftStateMachine();
   }
 }

@@ -150,43 +150,6 @@ class BiomechanicsEngine {
     } else {
       return 180.0;
     }
-  }
-
-  // ──────────────────────────────────────────
-  //  DEADLIFT angles
-  // ──────────────────────────────────────────
-
-  /// Hip hinge angle (shoulder → hip → knee)
-  static double deadliftHipAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final side = getMostVisibleSide(lm);
-    final shoulder = lm[side == 'left' ? PoseLandmarkType.leftShoulder : PoseLandmarkType.rightShoulder];
-    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
-    final knee = lm[side == 'left' ? PoseLandmarkType.leftKnee : PoseLandmarkType.rightKnee];
-    if (shoulder == null || hip == null || knee == null) return 180.0;
-    return calculateAngle(shoulder, hip, knee);
-  }
-
-  /// Knee extension angle (hip → knee → ankle)
-  static double deadliftKneeAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final side = getMostVisibleSide(lm);
-    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
-    final knee = lm[side == 'left' ? PoseLandmarkType.leftKnee : PoseLandmarkType.rightKnee];
-    final ankle = lm[side == 'left' ? PoseLandmarkType.leftAnkle : PoseLandmarkType.rightAnkle];
-    if (hip == null || knee == null || ankle == null) return 180.0;
-    return calculateAngle(hip, knee, ankle);
-  }
-
-  /// Back rounding approximated by mid-spine angle deviation
-  static double deadliftBackAngle(Map<PoseLandmarkType, PoseLandmark> lm) {
-    final side = getMostVisibleSide(lm);
-    final shoulder = lm[side == 'left' ? PoseLandmarkType.leftShoulder : PoseLandmarkType.rightShoulder];
-    final hip = lm[side == 'left' ? PoseLandmarkType.leftHip : PoseLandmarkType.rightHip];
-    if (shoulder == null || hip == null) return 0.0;
-    final dx = (shoulder.x - hip.x).abs();
-    final dy = (hip.y - shoulder.y).abs();
-    if (dy == 0) return 90.0;
-    return math.atan2(dx, dy) * 180.0 / math.pi;
-  }
 
   // ──────────────────────────────────────────
   //  Helpers

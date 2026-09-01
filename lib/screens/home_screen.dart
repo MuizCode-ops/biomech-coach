@@ -21,8 +21,6 @@ class HomeScreen extends StatelessWidget {
             SliverToBoxAdapter(child: _buildHeader(context)),
             SliverToBoxAdapter(child: _buildGreeting()),
             SliverToBoxAdapter(child: _buildActiveLifts(context)),
-            SliverToBoxAdapter(child: _buildComingSoonLabel()),
-            SliverToBoxAdapter(child: _buildComingSoonRow()),
             SliverToBoxAdapter(child: _buildFooter()),
           ],
         ),
@@ -211,39 +209,6 @@ class HomeScreen extends StatelessWidget {
               MaterialPageRoute(
                 builder: (_) => const CameraScreen(liftType: LiftType.benchPress),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ── Coming soon ────────────────────────
-
-  Widget _buildComingSoonLabel() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 28, 24, 12),
-      child: Text(
-        'LOCKED MODES',
-        style: GoogleFonts.outfit(
-          color: const Color(0xFF475569),
-          fontSize: 11,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 2.0,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildComingSoonRow() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        children: [
-          Expanded(
-            child: _ComingSoonCard(
-              lift: LiftType.deadlift,
-              color: Color(0xFFF59E0B),
             ),
           ),
         ],
@@ -597,88 +562,3 @@ class _Checkpoint extends StatelessWidget {
   }
 }
 
-// ── Coming Soon Card (Locked Game Card style) ───────────────────────────────────────
-
-class _ComingSoonCard extends StatelessWidget {
-  final LiftType lift;
-  final Color color;
-
-  const _ComingSoonCard({required this.lift, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0B0E17), // Even darker for locked cards
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF161F38), width: 1.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF05070D),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFF161F38), width: 1.5),
-                ),
-                child: Center(
-                  child: Text(
-                    'DL',
-                    style: GoogleFonts.outfit(
-                      color: const Color(0xFF475569),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF161F38),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: const Color(0xFF202B47), width: 0.8),
-                ),
-                child: Text(
-                  'LOCKED',
-                  style: GoogleFonts.outfit(
-                    color: const Color(0xFF64748B),
-                    fontSize: 8,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            lift.displayName.toUpperCase(),
-            style: GoogleFonts.outfit(
-              color: const Color(0xFF475569),
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Hip hinge & lumbar curve tracking',
-            style: GoogleFonts.outfit(
-              color: const Color(0xFF334155),
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

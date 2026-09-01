@@ -74,15 +74,12 @@ class _RepCounterWidgetState extends State<RepCounterWidget>
         return 'STAND TALL';
       case RepState.descending:
         if (widget.liftType == LiftType.benchPress) return 'LOWER BAR';
-        if (widget.liftType == LiftType.deadlift) return 'HINGE DOWN';
         return 'DESCEND';
       case RepState.atDepth:
         if (widget.liftType == LiftType.benchPress) return 'TOUCH CHEST';
-        if (widget.liftType == LiftType.deadlift) return 'BOTTOM HOLD';
         return 'DEPTH HOLD';
       case RepState.ascending:
         if (widget.liftType == LiftType.benchPress) return 'PRESS UP';
-        if (widget.liftType == LiftType.deadlift) return 'PULL UP';
         return 'DRIVE UP';
       case RepState.lockout:
         return 'LOCKOUT';

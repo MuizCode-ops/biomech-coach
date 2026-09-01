@@ -10,7 +10,7 @@ class LiftSession extends HiveObject {
   final DateTime startTime;
 
   @HiveField(1)
-  final String liftType; // 'squat' | 'benchPress' | 'deadlift'
+  final String liftType; // 'squat' | 'benchPress'
 
   @HiveField(2)
   final List<RepRecord> reps;

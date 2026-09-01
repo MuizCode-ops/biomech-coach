@@ -1,7 +1,7 @@
 // lib/constants/lift_thresholds.dart
 // Competition-grade angle thresholds based on IPF/IWF standards.
 
-enum LiftType { squat, benchPress, deadlift }
+enum LiftType { squat, benchPress }
 
 extension LiftTypeExtension on LiftType {
   String get displayName {
@@ -10,8 +10,6 @@ extension LiftTypeExtension on LiftType {
         return 'Squat';
       case LiftType.benchPress:
         return 'Bench Press';
-      case LiftType.deadlift:
-        return 'Deadlift';
     }
   }
 
@@ -21,8 +19,6 @@ extension LiftTypeExtension on LiftType {
         return '🏋️';
       case LiftType.benchPress:
         return '🤸';
-      case LiftType.deadlift:
-        return '💪';
     }
   }
 }
@@ -71,27 +67,6 @@ class LiftThresholds {
   static const double benchWristAlignmentTolerance = 20.0;
 
   // ──────────────────────────────────────────
-  //  DEADLIFT thresholds (degrees)
-  // ──────────────────────────────────────────
-  /// Hip angle must drop below this to start the deadlift hinge/descent
-  static const double deadliftStartHipAngle = 138.0;
-
-  /// Hip angle at bottom (hinge) — must be ≤ this to start
-  static const double deadliftBottomHipAngle = 75.0;
-
-  /// Knee angle at bottom
-  static const double deadliftBottomKneeAngle = 110.0;
-
-  /// Hip angle for full lockout — must be ≥ this
-  static const double deadliftLockoutHipAngle = 145.0;
-
-  /// Knee angle for full lockout
-  static const double deadliftLockoutKneeAngle = 145.0;
-
-  /// Max back angle — excessive rounding warning
-  static const double deadliftMaxBackRound = 40.0;
-
-  // ──────────────────────────────────────────
   //  GENERAL
   // ──────────────────────────────────────────
   /// Minimum landmark visibility score (0–1) to trust a pose point
@@ -116,11 +91,5 @@ Map<LiftType, Map<String, String>> liftPhaseDescriptions = {
     'depth': 'Bar touches chest',
     'ascent': 'Drive bar up and back',
     'lockout': 'Elbows fully extended',
-  },
-  LiftType.deadlift: {
-    'start': 'Hip hinge, bar over mid-foot',
-    'pull': 'Leg drive, flat back',
-    'midpoint': 'Bar passes knees',
-    'lockout': 'Full hip & knee extension, shoulders back',
   },
 };

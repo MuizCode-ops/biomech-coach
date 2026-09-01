@@ -169,13 +169,6 @@ class _CameraScreenState extends State<CameraScreen>
       case LiftType.benchPress:
         primary = BiomechanicsEngine.benchElbowAngle(lm);
         secondary = BiomechanicsEngine.benchElbowAngleRight(lm);
-      case LiftType.deadlift:
-        primary = BiomechanicsEngine.deadliftHipAngle(lm);
-        secondary = BiomechanicsEngine.deadliftKneeAngle(lm);
-        extras = {
-          'knee': secondary,
-          'back': BiomechanicsEngine.deadliftBackAngle(lm),
-        };
     }
 
     if (widget.liftType == LiftType.benchPress) {
@@ -449,11 +442,6 @@ class _CameraScreenState extends State<CameraScreen>
           'ELBOW L',
           'ELBOW R',
           LiftThresholds.benchBottomElbowAngle
-        ),
-      LiftType.deadlift => (
-          'HIP',
-          'KNEE',
-          LiftThresholds.deadliftBottomHipAngle
         ),
     };
 

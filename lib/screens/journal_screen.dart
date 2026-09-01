@@ -19,7 +19,7 @@ class JournalScreen extends StatefulWidget {
 
 class _JournalScreenState extends State<JournalScreen> {
   List<LiftSession> _sessions = [];
-  String? _selectedLiftType; // 'benchPress', 'squat', 'deadlift', or null for all
+  String? _selectedLiftType; // 'benchPress', 'squat', or null for all
 
   @override
   void initState() {
@@ -164,7 +164,6 @@ class _JournalScreenState extends State<JournalScreen> {
   Widget _buildCategoryTabs() {
     final benchPressSessions = _sessions.where((s) => s.liftType == 'benchPress').toList();
     final squatSessions = _sessions.where((s) => s.liftType == 'squat').toList();
-    final deadliftSessions = _sessions.where((s) => s.liftType == 'deadlift').toList();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -194,16 +193,6 @@ class _JournalScreenState extends State<JournalScreen> {
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          _buildCategoryCard(
-            title: 'Deadlift',
-            fullName: 'Deadlift',
-            emoji: '💪',
-            sessionCount: deadliftSessions.length,
-            typeKey: 'deadlift',
-            accentColor: const Color(0xFF1D428A), // NBA Blue
-            isFullWidth: true,
           ),
         ],
       ),
@@ -446,7 +435,7 @@ class _JournalScreenState extends State<JournalScreen> {
             Text(
               _selectedLiftType == null
                   ? 'No training games logged'
-                  : 'No ${_selectedLiftType == 'benchPress' ? 'Bench Press' : _selectedLiftType == 'squat' ? 'Squat' : 'Deadlift'} games logged',
+                  : 'No ${_selectedLiftType == 'benchPress' ? 'Bench Press' : 'Squat'} games logged',
               style: GoogleFonts.outfit(
                 color: Colors.white,
                 fontSize: 16,
@@ -539,8 +528,6 @@ class _SessionCard extends StatelessWidget {
         return 'SQT';
       case LiftType.benchPress:
         return 'B.P';
-      case LiftType.deadlift:
-        return 'DL';
     }
   }
 
@@ -550,8 +537,6 @@ class _SessionCard extends StatelessWidget {
         return const Color(0xFF10B981);
       case LiftType.benchPress:
         return const Color(0xFFC9082A);
-      case LiftType.deadlift:
-        return const Color(0xFF1D428A);
     }
   }
 

@@ -70,8 +70,6 @@ class SessionSummaryScreen extends StatelessWidget {
         return 'SQT';
       case LiftType.benchPress:
         return 'B.P';
-      case LiftType.deadlift:
-        return 'DL';
     }
   }
 
@@ -81,8 +79,6 @@ class SessionSummaryScreen extends StatelessWidget {
         return const Color(0xFF10B981);
       case LiftType.benchPress:
         return const Color(0xFFC9082A);
-      case LiftType.deadlift:
-        return const Color(0xFF1D428A);
     }
   }
 
@@ -556,12 +552,6 @@ class _RepRowState extends State<_RepRow> {
           'Lockout Elbow',
           '< ${LiftThresholds.benchBottomElbowAngle.toStringAsFixed(0)}°',
           '> ${LiftThresholds.benchLockoutElbowAngle.toStringAsFixed(0)}°'
-        ),
-      LiftType.deadlift => (
-          'Min Hip',
-          'Lockout Hip',
-          '< ${LiftThresholds.deadliftBottomHipAngle.toStringAsFixed(0)}°',
-          '> ${LiftThresholds.deadliftLockoutHipAngle.toStringAsFixed(0)}°'
         ),
     };
 
