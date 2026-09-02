@@ -36,6 +36,7 @@ class _CameraScreenState extends State<CameraScreen>
   CameraController? _cameraController;
   List<CameraDescription> _cameras = [];
   int _selectedCameraIndex = 0; // resolved to front in _initCamera
+  int _targetReps = 5;
   bool _isCameraInitialized = false;
 
   // ── Services ───────────────────────────
@@ -67,6 +68,13 @@ class _CameraScreenState extends State<CameraScreen>
   double _maxZoom = 1.0;
   bool _showZoomIndicator = false;
   Timer? _zoomIndicatorTimer;
+
+  // ── Pre-session countdown ──────────────
+  bool _showDurationPicker = false;
+  bool _showCountdown = false;
+  int _countdownSecondsRemaining = 0;
+  Timer? _countdownTimer;
+  static const List<int> _countdownPresets = [5, 10, 15, 30];
 
   @override
   void initState() {
@@ -151,6 +159,7 @@ class _CameraScreenState extends State<CameraScreen>
     _minZoom = await _cameraController!.getMinZoomLevel();
     _maxZoom = await _cameraController!.getMaxZoomLevel();
     _currentZoom = _minZoom;
+    await _cameraController!.setZoomLevel(_currentZoom);
 
     setState(() => _isCameraInitialized = true);
 
@@ -253,18 +262,52 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   void _toggleSession() {
+    if (!_sessionActive) {
+      // Show duration picker instead of starting immediately.
+      setState(() => _showDurationPicker = true);
+      return;
+    }
+    // Ending an active session — unchanged behaviour.
+    setState(() => _sessionActive = false);
+    _endSession();
+  }
+
+  /// Called when the user picks a countdown duration.
+  void _startCountdown(int seconds) {
     setState(() {
-      _sessionActive = !_sessionActive;
-      if (_sessionActive) {
-        _sessionStart = DateTime.now();
-        _sessionReps.clear();
-        _angleHistory.clear();
-        _benchAvgHistory.clear();
-        _stateMachine?.reset();
+      _showDurationPicker = false;
+      _countdownSecondsRemaining = seconds;
+      _showCountdown = true;
+    });
+
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_countdownSecondsRemaining <= 1) {
+        timer.cancel();
+        _ttsCoach.speak('Go!');
+        setState(() {
+          _showCountdown = false;
+          _countdownSecondsRemaining = 0;
+          // Actual session-start logic.
+          _sessionActive = true;
+          _sessionStart = DateTime.now();
+          _sessionReps.clear();
+          _angleHistory.clear();
+          _benchAvgHistory.clear();
+          _stateMachine?.reset();
+        });
       } else {
-        _endSession();
+        setState(() => _countdownSecondsRemaining--);
+        _ttsCoach.speak('$_countdownSecondsRemaining');
       }
     });
+
+    // Speak the first number immediately.
+    _ttsCoach.speak('$seconds');
   }
 
   Future<void> _endSession() async {
@@ -311,6 +354,7 @@ class _CameraScreenState extends State<CameraScreen>
     _ttsCoach.dispose();
     _faultClearTimer?.cancel();
     _zoomIndicatorTimer?.cancel();
+    _countdownTimer?.cancel();
     super.dispose();
   }
 
@@ -356,6 +400,10 @@ class _CameraScreenState extends State<CameraScreen>
             ),
           // Bottom bar
           Positioned(bottom: 0, left: 0, right: 0, child: _buildBottomBar()),
+          // Countdown overlay
+          if (_showCountdown) _buildCountdownOverlay(),
+          // Duration picker
+          if (_showDurationPicker) _buildDurationPicker(),
         ],
       ),
     );
@@ -538,6 +586,7 @@ class _CameraScreenState extends State<CameraScreen>
       totalReps: _stateMachine!.totalRepCount,
       state: _stateMachine!.state,
       liftType: widget.liftType,
+      targetReps: _targetReps,
     );
   }
 
@@ -623,6 +672,195 @@ class _CameraScreenState extends State<CameraScreen>
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Countdown overlay ─────────────────────────────────────
+
+  Widget _buildCountdownOverlay() {
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: Container(
+          color: Colors.black.withValues(alpha: 0.55),
+          child: Center(
+            child: Text(
+              '$_countdownSecondsRemaining',
+              style: GoogleFonts.barlowCondensed(
+                color: Colors.white,
+                fontSize: 160,
+                fontWeight: FontWeight.w700,
+                height: 1,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Duration picker ───────────────────────────────────────
+
+  Widget _buildDurationPicker() {
+    return Positioned.fill(
+      child: GestureDetector(
+        // Tap outside the card = cancel.
+        onTap: () => setState(() => _showDurationPicker = false),
+        behavior: HitTestBehavior.opaque,
+        child: Center(
+          child: GestureDetector(
+            // Prevent taps on the card from bubbling up and closing it.
+            onTap: () {},
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'SESSION SETUP',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'TARGET REPS',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white60,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (_targetReps > 1) {
+                            setState(() => _targetReps--);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.remove, color: Colors.white, size: 24),
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      Text(
+                        '$_targetReps',
+                        style: GoogleFonts.barlowCondensed(
+                          color: Colors.white,
+                          fontSize: 48,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      GestureDetector(
+                        onTap: () {
+                          if (_targetReps < 10) {
+                            setState(() => _targetReps++);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.add, color: Colors.white, size: 24),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  const Divider(color: AppColors.surfaceBorder),
+                  const SizedBox(height: 16),
+                  Text(
+                    'COUNTDOWN TIMER',
+                    style: GoogleFonts.outfit(
+                      color: Colors.white60,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: _countdownPresets.map((seconds) {
+                      return GestureDetector(
+                        onTap: () => _startCountdown(seconds),
+                        child: Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: AppColors.accentLive.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.accentLive.withValues(alpha: 0.5),
+                              width: 1,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${seconds}s',
+                              style: GoogleFonts.outfit(
+                                color: AppColors.accentLive,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () => setState(() => _showDurationPicker = false),
+                    child: Container(
+                      width: double.infinity,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.07),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Cancel',
+                          style: GoogleFonts.outfit(
+                            color: Colors.white54,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],

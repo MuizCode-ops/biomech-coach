@@ -746,7 +746,7 @@ class _RepRowState extends State<_RepRow> {
                         ),
                       ),
                       Text(
-                        '${widget.rep.formScore.toStringAsFixed(0)}% PCT',
+                        '${widget.rep.formScore.toStringAsFixed(0)}%',
                         style: GoogleFonts.barlowCondensed(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w900,

@@ -619,25 +619,7 @@ class _SessionCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Sport game status indicator
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: AppColors.surfaceBorder, width: 0.8),
-              ),
-              child: Text(
-                'FINAL',
-                style: GoogleFonts.outfit(
-                  color: AppColors.textMuted,
-                  fontSize: 8,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
+
             // Stats column
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -658,7 +640,7 @@ class _SessionCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${session.averageFormScore.toStringAsFixed(0)}% PCT',
+                  '${session.averageFormScore.toStringAsFixed(0)}%',
                   style: GoogleFonts.barlowCondensed(
                     color: scoreColor,
                     fontSize: 14,

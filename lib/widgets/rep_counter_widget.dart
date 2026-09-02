@@ -12,6 +12,7 @@ class RepCounterWidget extends StatefulWidget {
   final int totalReps;
   final RepState state;
   final LiftType liftType;
+  final int targetReps;
 
   const RepCounterWidget({
     super.key,
@@ -19,6 +20,7 @@ class RepCounterWidget extends StatefulWidget {
     required this.totalReps,
     required this.state,
     required this.liftType,
+    this.targetReps = 5,
   });
 
   @override
@@ -174,7 +176,7 @@ class _RepCounterWidgetState extends State<RepCounterWidget>
           ScaleTransition(
             scale: _scaleAnim,
             child: Text(
-              '${widget.validReps}',
+              '${widget.validReps} / ${widget.targetReps}',
               style: GoogleFonts.barlowCondensed(
                 color: AppColors.textPrimary,
                 fontSize: 64,
