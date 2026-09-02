@@ -50,6 +50,10 @@ class SessionSummaryScreen extends StatelessWidget {
                     _buildChartSection(),
                     const SizedBox(height: 24),
                     _buildRepList(),
+                    if (session.faultFrequency.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      _buildImprovementCard(),
+                    ],
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -375,6 +379,107 @@ class SessionSummaryScreen extends StatelessWidget {
   }
 
   // ── Rep list ────────────────────────────
+
+  // ── Fault tips lookup ──────────────────
+
+  static const Map<String, String> _faultTips = {
+    'Deeper!': 'Focus on breaking parallel \u2014 try pausing at the bottom of a few warm-up reps to build depth awareness.',
+    'Back rounding!': 'Brace your core before descending and keep your chest up throughout the lift.',
+    'Not deep enough!': 'Lower the bar fully to your chest before pressing \u2014 a spotter or slower tempo can help.',
+    'Touch chest!': 'Ensure the bar makes contact with your chest at the bottom \u2014 pause reps in warm-ups build this habit.',
+    'Full lockout!': 'Drive through to full arm extension at the top of each rep \u2014 don\u2019t cut reps short.',
+  };
+
+  Widget _buildImprovementCard() {
+    final faults = session.faultFrequency;
+    final topFaults = faults.entries.take(3).toList();
+    final totalReps = session.totalReps;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'IMPROVE NEXT SESSION',
+          style: GoogleFonts.outfit(
+            color: const Color(0xFF475569),
+            fontSize: 11,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2.0,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...topFaults.map((entry) {
+          final fault = entry.key;
+          final count = entry.value;
+          final tip = _faultTips[fault] ?? 'Work on this consistently \u2014 focus on controlled reps during warm-ups.';
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF111625),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFF1A2340),
+                width: 1,
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        fault,
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFFEF4444),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      '$count of $totalReps reps',
+                      style: GoogleFonts.outfit(
+                        color: const Color(0xFF64748B),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('\ud83d\udca1 ', style: TextStyle(fontSize: 13)),
+                    Expanded(
+                      child: Text(
+                        tip,
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF94A3B8),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
 
   Widget _buildRepList() {
     return Column(

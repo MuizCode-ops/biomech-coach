@@ -48,6 +48,20 @@ class LiftSession extends HiveObject {
     return '${mins}m ${secs}s';
   }
 
+  /// Tallies how often each fault string appears across all reps, sorted by frequency descending.
+  Map<String, int> get faultFrequency {
+    final Map<String, int> counts = {};
+    for (final rep in reps) {
+      for (final fault in rep.faultNotes) {
+        counts[fault] = (counts[fault] ?? 0) + 1;
+      }
+    }
+    final sorted = Map.fromEntries(
+      counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value)),
+    );
+    return sorted;
+  }
+
   Map<String, dynamic> toJson() => {
         'startTime': startTime.toIso8601String(),
         'liftType': liftType,
