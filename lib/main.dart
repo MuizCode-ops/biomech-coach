@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'constants/app_theme.dart';
 import 'services/database_service.dart';
 import 'screens/home_screen.dart';
 
@@ -14,8 +15,8 @@ Future<void> main() async {
 
   // Status bar: dark icons on light background
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarBrightness: Brightness.light,
-    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.dark,
+    statusBarIconBrightness: Brightness.light,
     statusBarColor: Colors.transparent,
   ));
 
@@ -38,39 +39,37 @@ class BiomechCoachApp extends StatelessWidget {
   }
 
   ThemeData _buildTheme() {
-    const primaryBlue = Color(0xFF2563EB);
-
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: AppColors.background,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryBlue,
-        brightness: Brightness.light,
-        primary: primaryBlue,
-        secondary: const Color(0xFF10B981),
-        surface: Colors.white,
-        error: const Color(0xFFEF4444),
+        seedColor: AppColors.accentBlue,
+        brightness: Brightness.dark,
+        primary: AppColors.accentBlue,
+        secondary: AppColors.accentLive,
+        surface: AppColors.surface,
+        error: AppColors.accentAlert,
       ),
-      textTheme: GoogleFonts.outfitTextTheme(ThemeData.light().textTheme),
+      textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme),
       appBarTheme: AppBarTheme(
-        backgroundColor: const Color(0xFFF8FAFC),
-        foregroundColor: const Color(0xFF0F172A),
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.textPrimary,
         titleTextStyle: GoogleFonts.outfit(
-          color: const Color(0xFF0F172A),
+          color: AppColors.textPrimary,
           fontSize: 18,
           fontWeight: FontWeight.w700,
         ),
         elevation: 0,
         scrolledUnderElevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       cardTheme: CardThemeData(
-        color: Colors.white,
+        color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
+          borderRadius: BorderRadius.circular(8),
+          side: const BorderSide(color: AppColors.surfaceBorder, width: 1),
         ),
       ),
     );

@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/lift_thresholds.dart';
+import '../constants/app_theme.dart';
 import '../models/lift_session.dart';
 import '../services/backup_service.dart';
 import '../services/database_service.dart';
@@ -77,7 +78,7 @@ class _JournalScreenState extends State<JournalScreen> {
         : _sessions.where((s) => s.liftType == _selectedLiftType).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF090D1A), // Midnight Obsidian Navy
+      backgroundColor: AppColors.background, // Midnight Obsidian Navy
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +111,7 @@ class _JournalScreenState extends State<JournalScreen> {
               Text(
                 'TRAINING HISTORIES',
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF475569),
+                  color: AppColors.textMuted,
                   fontSize: 11,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 2.0,
@@ -119,7 +120,7 @@ class _JournalScreenState extends State<JournalScreen> {
               Text(
                 'Journal',
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 28,
                   fontWeight: FontWeight.w900,
                 ),
@@ -130,13 +131,13 @@ class _JournalScreenState extends State<JournalScreen> {
           // Import/Export buttons (Game menu style)
           IconButton(
             icon: const Icon(Icons.download_rounded,
-                color: Color(0xFF94A3B8), size: 22),
+                color: AppColors.textMuted, size: 22),
             tooltip: 'Import Backup',
             onPressed: _importBackup,
           ),
           IconButton(
             icon: const Icon(Icons.upload_rounded,
-                color: Color(0xFF94A3B8), size: 22),
+                color: AppColors.textMuted, size: 22),
             tooltip: 'Export Backup',
             onPressed: _exportBackup,
           ),
@@ -148,12 +149,12 @@ class _JournalScreenState extends State<JournalScreen> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF161F38),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF263254), width: 1),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: const Icon(Icons.chevron_left_rounded,
-                  color: Colors.white, size: 22),
+                  color: AppColors.textPrimary, size: 22),
             ),
           ),
         ],
@@ -189,7 +190,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   emoji: '🏋️',
                   sessionCount: squatSessions.length,
                   typeKey: 'squat',
-                  accentColor: const Color(0xFF10B981), // Emerald
+                  accentColor: AppColors.accentLive, // Emerald
                 ),
               ),
             ],
@@ -228,10 +229,10 @@ class _JournalScreenState extends State<JournalScreen> {
           vertical: 14,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1E294B) : const Color(0xFF161F38),
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? accentColor : const Color(0xFF263254),
+            color: isSelected ? accentColor : AppColors.surfaceBorder,
             width: isSelected ? 2.0 : 1.0,
           ),
           boxShadow: isSelected
@@ -250,10 +251,10 @@ class _JournalScreenState extends State<JournalScreen> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1524),
+                color: AppColors.background,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? accentColor : const Color(0xFF263254),
+                  color: isSelected ? accentColor : AppColors.surfaceBorder,
                   width: 1.0,
                 ),
               ),
@@ -273,7 +274,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   Text(
                     title.toUpperCase(),
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.5,
@@ -283,9 +284,9 @@ class _JournalScreenState extends State<JournalScreen> {
                   const SizedBox(height: 2),
                   Text(
                     '$sessionCount Games',
-                    style: GoogleFonts.outfit(
-                      color: isSelected ? Colors.white70 : const Color(0xFF64748B),
-                      fontSize: 11,
+                    style: GoogleFonts.barlowCondensed(
+                      color: AppColors.textMuted,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -304,7 +305,7 @@ class _JournalScreenState extends State<JournalScreen> {
               const SizedBox(width: 4),
               const Icon(
                 Icons.chevron_right_rounded,
-                color: Color(0xFF64748B),
+                color: AppColors.textMuted,
                 size: 18,
               ),
             ],
@@ -344,12 +345,12 @@ class _JournalScreenState extends State<JournalScreen> {
           _StatCard(
               value: '$totalReps',
               label: 'Valid Reps',
-              color: const Color(0xFF10B981)),
+              color: AppColors.accentLive),
           const SizedBox(width: 8),
           _StatCard(
               value: '$totalBadReps',
               label: 'Bad Form',
-              color: const Color(0xFFC9082A)), // NBA Red
+              color: AppColors.accentAlert), // NBA Red
           const SizedBox(width: 8),
           _StatCard(
               value: '${avgScore.toStringAsFixed(0)}%',
@@ -371,9 +372,9 @@ class _JournalScreenState extends State<JournalScreen> {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: const Color(0xFF161F38),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFF263254), width: 1.2),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.surfaceBorder, width: 1.2),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,7 +382,7 @@ class _JournalScreenState extends State<JournalScreen> {
             Text(
               'FORM SCORE TREND',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 12,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.0,
@@ -406,12 +407,12 @@ class _JournalScreenState extends State<JournalScreen> {
                               FlSpot(e.key.toDouble(), e.value))
                           .toList(),
                       isCurved: true,
-                      color: const Color(0xFF2F80ED),
+                      color: AppColors.accentBlue,
                       barWidth: 3,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: const Color(0xFF2F80ED).withValues(alpha: 0.12),
+                        color: AppColors.accentBlue.withValues(alpha: 0.12),
                       ),
                     ),
                   ],
@@ -437,7 +438,7 @@ class _JournalScreenState extends State<JournalScreen> {
                   ? 'No training games logged'
                   : 'No ${_selectedLiftType == 'benchPress' ? 'Bench Press' : 'Squat'} games logged',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
               ),
@@ -446,7 +447,7 @@ class _JournalScreenState extends State<JournalScreen> {
             Text(
               'Complete a session scan to start tracking history.',
               style: GoogleFonts.outfit(
-                color: const Color(0xFF64748B),
+                color: AppColors.textMuted,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -480,17 +481,17 @@ class _StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF1E293B), width: 1.0),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
         ),
         child: Column(
           children: [
             Text(
               value,
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.barlowCondensed(
                 color: color,
-                fontSize: 18,
+                fontSize: 22,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -498,7 +499,7 @@ class _StatCard extends StatelessWidget {
             Text(
               label.toUpperCase(),
               style: GoogleFonts.outfit(
-                color: const Color(0xFF64748B),
+                color: AppColors.textMuted,
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.5,
@@ -534,7 +535,7 @@ class _SessionCard extends StatelessWidget {
   Color get _themeColor {
     switch (_liftType) {
       case LiftType.squat:
-        return const Color(0xFF10B981);
+        return AppColors.accentLive;
       case LiftType.benchPress:
         return const Color(0xFFC9082A);
     }
@@ -543,7 +544,7 @@ class _SessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scoreColor = session.averageFormScore >= 80
-        ? const Color(0xFF10B981)
+        ? AppColors.accentLive
         : const Color(0xFFF59E0B);
 
     return GestureDetector(
@@ -562,9 +563,9 @@ class _SessionCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xFF111625),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF202B47), width: 1.0),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
         ),
         child: Row(
           children: [
@@ -573,8 +574,8 @@ class _SessionCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFF090D1A),
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: _themeColor.withValues(alpha: 0.7),
                   width: 1.5,
@@ -584,7 +585,7 @@ class _SessionCard extends StatelessWidget {
                 child: Text(
                   _abbreviation,
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
                   ),
@@ -600,7 +601,7 @@ class _SessionCard extends StatelessWidget {
                   Text(
                     _liftType.displayName.toUpperCase(),
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w900,
                       fontSize: 13,
                       letterSpacing: 0.5,
@@ -610,7 +611,7 @@ class _SessionCard extends StatelessWidget {
                   Text(
                     '${session.formattedDate}  ·  ${session.formattedDuration}',
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFF64748B),
+                      color: AppColors.textMuted,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -622,14 +623,14 @@ class _SessionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: const Color(0xFF090D1A),
+                color: AppColors.background,
                 borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: const Color(0xFF202B47), width: 0.8),
+                border: Border.all(color: AppColors.surfaceBorder, width: 0.8),
               ),
               child: Text(
                 'FINAL',
                 style: GoogleFonts.outfit(
-                  color: const Color(0xFF64748B),
+                  color: AppColors.textMuted,
                   fontSize: 8,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0.5,
@@ -646,21 +647,21 @@ class _SessionCard extends StatelessWidget {
                   session.invalidReps > 0
                       ? '${session.validReps} W - ${session.invalidReps} L'
                       : '${session.totalReps} REPS',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.barlowCondensed(
                     color: session.invalidReps > 0
-                        ? const Color(0xFFC9082A)
-                        : const Color(0xFF10B981),
+                        ? AppColors.accentAlert
+                        : AppColors.accentLive,
                     fontWeight: FontWeight.w900,
-                    fontSize: 12,
+                    fontSize: 16,
                     letterSpacing: 0.5,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${session.averageFormScore.toStringAsFixed(0)}% PCT',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.barlowCondensed(
                     color: scoreColor,
-                    fontSize: 10,
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

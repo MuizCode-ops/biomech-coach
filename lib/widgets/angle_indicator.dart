@@ -1,8 +1,9 @@
 // lib/widgets/angle_indicator.dart
-// Real-time joint angle display widget — Premium Dark HUD theme.
+// Real-time joint angle display widget — dark scoreboard HUD.
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_theme.dart';
 
 class AngleIndicator extends StatelessWidget {
   final String label;
@@ -20,20 +21,18 @@ class AngleIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isGood ? const Color(0xFF10B981) : const Color(0xFFEF4444);
-    final bgColor = isGood
-        ? const Color(0xFF10B981).withValues(alpha: 0.15)
-        : const Color(0xFFEF4444).withValues(alpha: 0.15);
+    final color = isGood ? AppColors.accentLive : AppColors.accentAlert;
+    final bgColor = color.withValues(alpha: 0.10);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF161F38).withValues(alpha: 0.85), // Dark Slate Navy Glass
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.45), width: 1.5),
+        color: AppColors.surface.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withValues(alpha: 0.35), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -46,8 +45,8 @@ class AngleIndicator extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: color.withValues(alpha: 0.3), width: 0.8),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: color.withValues(alpha: 0.25), width: 0.8),
             ),
             child: Text(
               label,
@@ -62,10 +61,10 @@ class AngleIndicator extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             '${angle.toStringAsFixed(0)}°',
-            style: GoogleFonts.outfit(
-              color: Colors.white,
-              fontSize: 26,
-              fontWeight: FontWeight.w900,
+            style: GoogleFonts.barlowCondensed(
+              color: AppColors.textPrimary,
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
               height: 1.0,
             ),
           ),
@@ -74,7 +73,7 @@ class AngleIndicator extends StatelessWidget {
             Text(
               'REQ ≤ ${targetAngle!.toStringAsFixed(0)}°',
               style: GoogleFonts.outfit(
-                color: const Color(0xFF64748B),
+                color: AppColors.textMuted,
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
               ),

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/lift_thresholds.dart';
+import '../constants/app_theme.dart';
 import 'camera_screen.dart';
 import 'journal_screen.dart';
 
@@ -13,7 +14,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF090D1A), // Midnight Obsidian Navy
+      backgroundColor: AppColors.background, // Midnight Obsidian Navy
       body: SafeArea(
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
@@ -40,7 +41,7 @@ class HomeScreen extends StatelessWidget {
               Text(
                 'BIOMECH',
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.5,
@@ -60,7 +61,7 @@ class HomeScreen extends StatelessWidget {
                 child: Text(
                   'COACH',
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 10,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.0,
@@ -80,22 +81,22 @@ class HomeScreen extends StatelessWidget {
               height: 40,
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: const Color(0xFF161F38),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF263254), width: 1),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: Row(
                 children: [
                   const Icon(
                     Icons.analytics_rounded,
-                    color: Color(0xFF2F80ED),
+                    color: AppColors.accentBlue,
                     size: 18,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     'JOURNAL',
                     style: GoogleFonts.outfit(
-                      color: Colors.white,
+                      color: AppColors.textPrimary,
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.8,
@@ -118,10 +119,10 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF161F38),
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: const Color(0xFF263254),
+            color: AppColors.surfaceBorder,
             width: 1,
           ),
         ),
@@ -136,7 +137,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'EDGE-AI FEED ACTIVE',
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFF10B981),
+                      color: AppColors.accentLive,
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.2,
@@ -146,7 +147,7 @@ class HomeScreen extends StatelessWidget {
                   Text(
                     'Pose tracker running locally. Zero cloud lag.',
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFF94A3B8),
+                      color: AppColors.textMuted,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -171,7 +172,7 @@ class HomeScreen extends StatelessWidget {
           Text(
             'ACTIVE GAME MODES',
             style: GoogleFonts.outfit(
-              color: const Color(0xFF475569),
+              color: AppColors.textMuted,
               fontSize: 11,
               fontWeight: FontWeight.w900,
               letterSpacing: 2.0,
@@ -223,12 +224,12 @@ class HomeScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.shield_rounded,
-              color: Color(0xFF10B981), size: 14),
+              color: AppColors.accentLive, size: 14),
           const SizedBox(width: 6),
           Text(
             'Secure Offline Processing Active',
             style: GoogleFonts.outfit(
-              color: const Color(0xFF475569),
+              color: AppColors.textMuted,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -274,11 +275,11 @@ class _BlinkingLiveDotState extends State<_BlinkingLiveDot>
         width: 10,
         height: 10,
         decoration: const BoxDecoration(
-          color: Color(0xFF10B981),
+          color: AppColors.accentLive,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Color(0xFF10B981),
+              color: AppColors.accentLive,
               blurRadius: 6,
               spreadRadius: 2,
             ),
@@ -350,9 +351,9 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: const Color(0xFF111625), // Cleaner darker card navy
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF202B47), width: 1.0),
+            color: AppColors.surface, // Cleaner darker card navy
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -368,8 +369,8 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                       width: 54,
                       height: 54,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF090D1A),
-                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(6),
                         border: Border.all(
                             color: widget.themeColor.withValues(alpha: 0.7),
                             width: 2.0),
@@ -378,7 +379,7 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                         child: Text(
                           abbreviation,
                           style: GoogleFonts.outfit(
-                            color: Colors.white,
+                            color: AppColors.textPrimary,
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
@@ -396,7 +397,7 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                               Text(
                                 widget.liftType.displayName.toUpperCase(),
                                 style: GoogleFonts.outfit(
-                                  color: Colors.white,
+                                  color: AppColors.textPrimary,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 0.5,
@@ -407,16 +408,16 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                                  color: AppColors.accentLive.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(4),
                                   border: Border.all(
-                                      color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                                      color: AppColors.accentLive.withValues(alpha: 0.3),
                                       width: 0.8),
                                 ),
                                 child: Text(
                                   'READY',
                                   style: GoogleFonts.outfit(
-                                    color: const Color(0xFF10B981),
+                                    color: AppColors.accentLive,
                                     fontSize: 8,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 0.5,
@@ -429,7 +430,7 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                           Text(
                             widget.subtitle,
                             style: GoogleFonts.outfit(
-                              color: const Color(0xFF94A3B8),
+                              color: AppColors.textMuted,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -457,7 +458,7 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
               // Divider
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                child: Divider(color: Color(0xFF1E2842), height: 1),
+                child: Divider(color: AppColors.surfaceBorder, height: 1),
               ),
 
               // Start button row
@@ -470,7 +471,7 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                         height: 44,
                         decoration: BoxDecoration(
                           color: widget.themeColor,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
                           child: Row(
@@ -498,13 +499,13 @@ class _LiftHeroCardState extends State<_LiftHeroCard>
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF161F38),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFF202B47), width: 1),
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.surfaceBorder, width: 1),
                       ),
                       child: const Icon(
                         Icons.videocam_rounded,
-                        color: Color(0xFF94A3B8),
+                        color: AppColors.textMuted,
                         size: 18,
                       ),
                     ),
@@ -531,7 +532,7 @@ class _Checkpoint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF090D1A),
+        color: AppColors.background,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color.withValues(alpha: 0.25), width: 1),
       ),
@@ -550,7 +551,7 @@ class _Checkpoint extends StatelessWidget {
           Text(
             label,
             style: GoogleFonts.outfit(
-              color: const Color(0xFF94A3B8),
+              color: AppColors.textMuted,
               fontSize: 9,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.5,

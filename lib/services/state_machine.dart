@@ -1,6 +1,7 @@
 // lib/services/state_machine.dart
 // Deterministic rep state machine calibrated to competition powerlifting standards.
 
+import 'package:flutter/foundation.dart';
 import '../constants/lift_thresholds.dart';
 import '../models/rep_record.dart';
 
@@ -66,7 +67,7 @@ abstract class RepStateMachine {
   String get _startCueText => 'Squat!';
 
   /// Whether this lift requires a 'Rack!' cue before completing. Override to disable.
-  bool get _requiresRackCue => true;
+  bool get requiresRackCue => true;
 
   /// Returns true when the last [_stabilityFrames] angles vary by ≤ [_stabilityTolerance]°.
   bool _isStable(double angle) {
@@ -99,7 +100,7 @@ abstract class RepStateMachine {
   void _transition(RepState next) {
     final prev = _state;
     _state = next;
-    print('[StateMachine] Transition: ${prev.name} -> ${next.name} (Min Primary: ${_minPrimaryAngle.toStringAsFixed(1)}°)');
+    debugPrint('[StateMachine] Transition: ${prev.name} -> ${next.name} (Min Primary: ${_minPrimaryAngle.toStringAsFixed(1)}°)');
   }
 
   void _addFault(String fault) {
@@ -171,7 +172,7 @@ abstract class RepStateMachine {
 // ──────────────────────────────────────────────────
 class SquatStateMachine extends RepStateMachine {
   @override
-  bool get _requiresRackCue => false;
+  bool get requiresRackCue => false;
 
   @override
   double get _depthThreshold => LiftThresholds.squatDepthHipAngle;
@@ -236,7 +237,7 @@ class SquatStateMachine extends RepStateMachine {
         }
 
       case RepState.lockout:
-        if (!_requiresRackCue) {
+        if (!requiresRackCue) {
           _completeRep(primaryAngle);
           return;
         }
@@ -261,9 +262,6 @@ class SquatStateMachine extends RepStateMachine {
 class BenchStateMachine extends RepStateMachine {
   @override
   String get _startCueText => 'Start!';
-
-  @override
-  bool get _requiresRackCue => false;
 
   @override
   double get _depthThreshold => LiftThresholds.benchBottomElbowAngle;
@@ -326,7 +324,7 @@ class BenchStateMachine extends RepStateMachine {
         }
 
       case RepState.lockout:
-        if (!_requiresRackCue) {
+        if (!requiresRackCue) {
           _completeRep(primaryAngle);
           return;
         }

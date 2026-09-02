@@ -1,8 +1,9 @@
 // lib/widgets/rep_counter_widget.dart
-// Animated valid rep counter — Premium Dark HUD theme.
+// Scoreboard-style rep counter — dark sports aesthetic with pulsing LIVE dot.
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/app_theme.dart';
 import '../constants/lift_thresholds.dart';
 import '../services/state_machine.dart';
 
@@ -25,9 +26,10 @@ class RepCounterWidget extends StatefulWidget {
 }
 
 class _RepCounterWidgetState extends State<RepCounterWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _scaleAnim;
+  late AnimationController _liveController;
   int _prevValid = 0;
 
   @override
@@ -40,6 +42,10 @@ class _RepCounterWidgetState extends State<RepCounterWidget>
     _scaleAnim = Tween<double>(begin: 1.0, end: 1.25).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.elasticOut),
     );
+    _liveController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
   }
 
   @override
@@ -54,17 +60,18 @@ class _RepCounterWidgetState extends State<RepCounterWidget>
   @override
   void dispose() {
     _pulseController.dispose();
+    _liveController.dispose();
     super.dispose();
   }
 
   // ── State colours ───────────────────────
   Color get _stateColor => switch (widget.state) {
-        RepState.idle => const Color(0xFF2F80ED),
+        RepState.idle => AppColors.accentBlue,
         RepState.descending => const Color(0xFF7C3AED),
-        RepState.atDepth => const Color(0xFF10B981),
+        RepState.atDepth => AppColors.accentLive,
         RepState.ascending => const Color(0xFFF59E0B),
-        RepState.lockout => const Color(0xFF10B981),
-        RepState.complete => const Color(0xFF10B981),
+        RepState.lockout => AppColors.accentLive,
+        RepState.complete => AppColors.accentLive,
       };
 
   String get _stateLabel {
@@ -93,12 +100,12 @@ class _RepCounterWidgetState extends State<RepCounterWidget>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF161F38).withValues(alpha: 0.85), // Dark Slate Navy Glass
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF263254), width: 1.5),
+        color: AppColors.surface.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.surfaceBorder, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 6),
           ),
@@ -107,14 +114,50 @@ class _RepCounterWidgetState extends State<RepCounterWidget>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // LIVE indicator + state pill row
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Pulsing LIVE dot
+              FadeTransition(
+                opacity: _liveController,
+                child: Container(
+                  width: 7,
+                  height: 7,
+                  decoration: const BoxDecoration(
+                    color: AppColors.accentLive,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.accentLive,
+                        blurRadius: 4,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'LIVE',
+                style: GoogleFonts.outfit(
+                  color: AppColors.accentLive,
+                  fontSize: 8,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           // State pill
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: _stateColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: _stateColor.withValues(alpha: 0.3), width: 0.8),
+              color: _stateColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: _stateColor.withValues(alpha: 0.25), width: 0.8),
             ),
             child: Text(
               _stateLabel,
@@ -127,24 +170,30 @@ class _RepCounterWidgetState extends State<RepCounterWidget>
             ),
           ),
           const SizedBox(height: 10),
-          // Rep count
+          // Rep count — big Barlow Condensed scoreboard number
           ScaleTransition(
             scale: _scaleAnim,
             child: Text(
               '${widget.validReps}',
-              style: GoogleFonts.outfit(
-                color: Colors.white,
-                fontSize: 60,
-                fontWeight: FontWeight.w900,
+              style: GoogleFonts.barlowCondensed(
+                color: AppColors.textPrimary,
+                fontSize: 64,
+                fontWeight: FontWeight.w800,
                 height: 1.0,
               ),
             ),
           ),
-          const SizedBox(height: 2),
+          // Thin scoreboard divider
+          Container(
+            width: 36,
+            height: 1,
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            color: AppColors.surfaceBorder,
+          ),
           Text(
             'VALID REPS',
             style: GoogleFonts.outfit(
-              color: const Color(0xFF64748B),
+              color: AppColors.textMuted,
               fontSize: 9,
               fontWeight: FontWeight.w900,
               letterSpacing: 1.5,
@@ -155,31 +204,39 @@ class _RepCounterWidgetState extends State<RepCounterWidget>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: const Color(0xFF0F1524),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: const Color(0xFF1E2640), width: 0.8),
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: AppColors.surfaceBorder, width: 0.8),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'TOTAL: ${widget.totalReps}',
+                  'TOTAL: ',
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFF94A3B8),
+                    color: AppColors.textMuted,
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
+                Text(
+                  '${widget.totalReps}',
+                  style: GoogleFonts.barlowCondensed(
+                    color: AppColors.textPrimary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 if (widget.totalReps > widget.validReps) ...[
                   const SizedBox(width: 8),
-                  Container(width: 1, height: 10, color: const Color(0xFF263254)),
+                  Container(width: 1, height: 10, color: AppColors.surfaceBorder),
                   const SizedBox(width: 8),
                   Text(
                     '✗ ${widget.totalReps - widget.validReps}',
-                    style: GoogleFonts.outfit(
-                      color: const Color(0xFFEF4444),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
+                    style: GoogleFonts.barlowCondensed(
+                      color: AppColors.accentAlert,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],

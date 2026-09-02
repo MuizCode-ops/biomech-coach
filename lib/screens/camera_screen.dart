@@ -19,8 +19,8 @@ import '../services/tts_coach.dart';
 import '../widgets/angle_indicator.dart';
 import '../widgets/rep_counter_widget.dart';
 import '../widgets/skeleton_painter.dart';
+import '../constants/app_theme.dart';
 import 'session_screen.dart';
-import 'dart:math' as math;
 
 class CameraScreen extends StatefulWidget {
   final LiftType liftType;
@@ -246,9 +246,9 @@ class _CameraScreenState extends State<CameraScreen>
 
       // Delete the temporary cache file
       await File(file.path).delete();
-      print('[CameraScreen] Saved wrongdoing screenshot to $permanentPath');
+      debugPrint('[CameraScreen] Saved wrongdoing screenshot to $permanentPath');
     } catch (e) {
-      print('[CameraScreen] Error capturing wrongdoing image: $e');
+      debugPrint('[CameraScreen] Error capturing wrongdoing image: $e');
     }
   }
 
@@ -381,7 +381,7 @@ class _CameraScreenState extends State<CameraScreen>
   Widget _buildCameraPreview() {
     if (!_isCameraInitialized || _cameraController == null) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF2563EB)),
+        child: CircularProgressIndicator(color: AppColors.accentLive),
       );
     }
     return GestureDetector(
@@ -463,7 +463,7 @@ class _CameraScreenState extends State<CameraScreen>
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                       color: Colors.white.withValues(alpha: 0.2), width: 1),
                 ),
@@ -545,11 +545,11 @@ class _CameraScreenState extends State<CameraScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFFEF4444),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.accentAlert,
+        borderRadius: BorderRadius.circular(6),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFEF4444).withValues(alpha: 0.4),
+            color: AppColors.accentAlert.withValues(alpha: 0.4),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -581,7 +581,7 @@ class _CameraScreenState extends State<CameraScreen>
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
                 color: Colors.white.withValues(alpha: 0.15), width: 1),
           ),
@@ -592,14 +592,14 @@ class _CameraScreenState extends State<CameraScreen>
               height: 52,
               decoration: BoxDecoration(
                 color: _sessionActive
-                    ? const Color(0xFFEF4444)
-                    : const Color(0xFF2563EB),
-                borderRadius: BorderRadius.circular(14),
+                    ? AppColors.accentAlert
+                    : AppColors.accentLive,
+                borderRadius: BorderRadius.circular(6),
                 boxShadow: [
                   BoxShadow(
                     color: (_sessionActive
-                            ? const Color(0xFFEF4444)
-                            : const Color(0xFF2563EB))
+                            ? AppColors.accentAlert
+                            : AppColors.accentLive)
                         .withValues(alpha: 0.5),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
@@ -651,7 +651,7 @@ class _HudButton extends StatelessWidget {
         height: 42,
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(6),
           border:
               Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
         ),

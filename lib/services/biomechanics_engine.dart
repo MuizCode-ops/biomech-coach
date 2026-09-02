@@ -150,6 +150,7 @@ class BiomechanicsEngine {
     } else {
       return 180.0;
     }
+  }
 
   // ──────────────────────────────────────────
   //  Helpers

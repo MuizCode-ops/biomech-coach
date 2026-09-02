@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -39,7 +40,7 @@ class BackupService {
 
       return result.status == ShareResultStatus.success;
     } catch (e) {
-      print('[BackupService] Export error: $e');
+      debugPrint('[BackupService] Export error: $e');
       return false;
     }
   }
@@ -86,7 +87,7 @@ class BackupService {
 
       return importCount;
     } catch (e) {
-      print('[BackupService] Import error: $e');
+      debugPrint('[BackupService] Import error: $e');
       return -1;
     }
   }

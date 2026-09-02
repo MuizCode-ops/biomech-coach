@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import '../constants/lift_thresholds.dart';
 import '../models/lift_session.dart';
 import '../models/rep_record.dart';
+import '../constants/app_theme.dart';
 import 'home_screen.dart';
 
 class SessionSummaryScreen extends StatelessWidget {
@@ -31,7 +32,7 @@ class SessionSummaryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF090D1A), // Midnight Obsidian Navy
+      backgroundColor: AppColors.background, // Midnight Obsidian Navy
       body: SafeArea(
         child: Column(
           children: [
@@ -108,12 +109,12 @@ class SessionSummaryScreen extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: const Color(0xFF161F38),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF263254), width: 1),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: AppColors.surfaceBorder, width: 1),
               ),
               child: const Icon(Icons.close_rounded,
-                  color: Colors.white, size: 20),
+                  color: AppColors.textPrimary, size: 20),
             ),
           ),
           const SizedBox(width: 14),
@@ -132,7 +133,7 @@ class SessionSummaryScreen extends StatelessWidget {
               Text(
                 _liftType.displayName.toUpperCase(),
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0.5,
@@ -146,8 +147,8 @@ class SessionSummaryScreen extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFF0F1524),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(6),
               border: Border.all(
                 color: _themeColor.withValues(alpha: 0.7),
                 width: 1.5,
@@ -157,7 +158,7 @@ class SessionSummaryScreen extends StatelessWidget {
               child: Text(
                 _abbreviation,
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
                 ),
@@ -180,9 +181,9 @@ class SessionSummaryScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF111625),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF202B47), width: 1.0),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
       ),
       child: Row(
         children: [
@@ -211,7 +212,7 @@ class SessionSummaryScreen extends StatelessWidget {
                 Text(
                   isGreat ? '🎯 Form locked in!' : '💪 Adjust parameters',
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: AppColors.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                   ),
@@ -222,7 +223,7 @@ class SessionSummaryScreen extends StatelessWidget {
                       ? 'Reps hit absolute depth/lockout standards.'
                       : 'Audio logs flag warnings for deep angle thresholds.',
                   style: GoogleFonts.outfit(
-                    color: const Color(0xFF94A3B8),
+                    color: AppColors.textMuted,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -233,7 +234,7 @@ class SessionSummaryScreen extends StatelessWidget {
           const SizedBox(width: 16),
           Text(
             '${score.toStringAsFixed(0)}%',
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.barlowCondensed(
               color: color,
               fontSize: 38,
               fontWeight: FontWeight.w900,
@@ -283,9 +284,9 @@ class SessionSummaryScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF111625),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF202B47), width: 1.0),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +294,7 @@ class SessionSummaryScreen extends StatelessWidget {
           Text(
             'REP FLEX PERFORMANCE CHART',
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: AppColors.textPrimary,
               fontSize: 12,
               fontWeight: FontWeight.w900,
               letterSpacing: 1.0,
@@ -310,7 +311,7 @@ class SessionSummaryScreen extends StatelessWidget {
                   show: true,
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (_) => const FlLine(
-                    color: Color(0xFF1E293B),
+                    color: AppColors.surfaceBorder,
                     strokeWidth: 1,
                   ),
                 ),
@@ -322,8 +323,8 @@ class SessionSummaryScreen extends StatelessWidget {
                       reservedSize: 28,
                       getTitlesWidget: (v, _) => Text(
                         v.toInt().toString(),
-                        style: GoogleFonts.outfit(
-                            color: const Color(0xFF475569), fontSize: 10, fontWeight: FontWeight.w700),
+                        style: GoogleFonts.barlowCondensed(
+                            color: AppColors.textMuted, fontSize: 12, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -336,8 +337,8 @@ class SessionSummaryScreen extends StatelessWidget {
                       showTitles: true,
                       getTitlesWidget: (v, _) => Text(
                         'R${v.toInt() + 1}',
-                        style: GoogleFonts.outfit(
-                            color: const Color(0xFF475569), fontSize: 10, fontWeight: FontWeight.w700),
+                        style: GoogleFonts.barlowCondensed(
+                            color: AppColors.textMuted, fontSize: 12, fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -358,10 +359,10 @@ class SessionSummaryScreen extends StatelessWidget {
                       getDotPainter: (spot, _, __, ___) => FlDotCirclePainter(
                         radius: 5,
                         color: session.reps[spot.x.toInt()].isValid
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFFC9082A),
+                            ? AppColors.accentLive
+                            : AppColors.accentAlert,
                         strokeWidth: 1.5,
-                        strokeColor: Colors.white,
+                        strokeColor: AppColors.textPrimary,
                       ),
                     ),
                     belowBarData: BarAreaData(
@@ -401,7 +402,7 @@ class SessionSummaryScreen extends StatelessWidget {
         Text(
           'IMPROVE NEXT SESSION',
           style: GoogleFonts.outfit(
-            color: const Color(0xFF475569),
+            color: AppColors.textMuted,
             fontSize: 11,
             fontWeight: FontWeight.w900,
             letterSpacing: 2.0,
@@ -417,10 +418,10 @@ class SessionSummaryScreen extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF111625),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: const Color(0xFF1A2340),
+                color: AppColors.surfaceBorder,
                 width: 1,
               ),
             ),
@@ -432,13 +433,13 @@ class SessionSummaryScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                        color: AppColors.accentAlert.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         fault,
                         style: GoogleFonts.outfit(
-                          color: const Color(0xFFEF4444),
+                          color: AppColors.accentAlert,
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                         ),
@@ -448,7 +449,7 @@ class SessionSummaryScreen extends StatelessWidget {
                     Text(
                       '$count of $totalReps reps',
                       style: GoogleFonts.outfit(
-                        color: const Color(0xFF64748B),
+                        color: AppColors.textMuted,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -464,7 +465,7 @@ class SessionSummaryScreen extends StatelessWidget {
                       child: Text(
                         tip,
                         style: GoogleFonts.outfit(
-                          color: const Color(0xFF94A3B8),
+                          color: AppColors.textMuted,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           height: 1.5,
@@ -488,7 +489,7 @@ class SessionSummaryScreen extends StatelessWidget {
         Text(
           'PLAY-BY-PLAY BREAKDOWN',
           style: GoogleFonts.outfit(
-            color: const Color(0xFF475569),
+            color: AppColors.textMuted,
             fontSize: 11,
             fontWeight: FontWeight.w900,
             letterSpacing: 2.0,
@@ -536,7 +537,7 @@ class SessionSummaryScreen extends StatelessWidget {
             child: Text(
               (fromJournal ? 'RETURN TO JOURNAL' : 'CLOSE REPORT').toUpperCase(),
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 1.0,
@@ -564,17 +565,17 @@ class _StatBox extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF1E293B), width: 1.0),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: AppColors.surfaceBorder, width: 1.0),
         ),
         child: Column(
           children: [
             Text(
               value,
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.barlowCondensed(
                 color: color,
-                fontSize: 18,
+                fontSize: 22,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -582,7 +583,7 @@ class _StatBox extends StatelessWidget {
             Text(
               label.toUpperCase(),
               style: GoogleFonts.outfit(
-                color: const Color(0xFF64748B),
+                color: AppColors.textMuted,
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.5,
@@ -642,7 +643,7 @@ class _RepRowState extends State<_RepRow> {
   @override
   Widget build(BuildContext context) {
     final valid = widget.rep.isValid;
-    final statusColor = valid ? const Color(0xFF10B981) : const Color(0xFFC9082A);
+    final statusColor = valid ? AppColors.accentLive : AppColors.accentAlert;
 
     final (depthLabel, lockoutLabel, depthTarget, lockoutTarget) =
         switch (widget.liftType) {
@@ -663,17 +664,17 @@ class _RepRowState extends State<_RepRow> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF111625),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: _isExpanded
-              ? const Color(0xFF2F80ED)
-              : const Color(0xFF202B47),
+              ? AppColors.accentBlue
+              : AppColors.surfaceBorder,
           width: _isExpanded ? 1.5 : 1,
         ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -693,17 +694,17 @@ class _RepRowState extends State<_RepRow> {
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF090D1A),
+                          color: AppColors.background,
                           shape: BoxShape.circle,
                           border: Border.all(color: statusColor, width: 1.5),
                         ),
                         child: Center(
                           child: Text(
                             '${widget.number}',
-                            style: GoogleFonts.outfit(
-                              color: Colors.white,
+                            style: GoogleFonts.barlowCondensed(
+                              color: AppColors.textPrimary,
                               fontWeight: FontWeight.w900,
-                              fontSize: 13,
+                              fontSize: 16,
                             ),
                           ),
                         ),
@@ -727,7 +728,7 @@ class _RepRowState extends State<_RepRow> {
                               Text(
                                 widget.rep.faultNotes.join(' · ').toUpperCase(),
                                 style: GoogleFonts.outfit(
-                                  color: const Color(0xFF64748B),
+                                  color: AppColors.textMuted,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -736,7 +737,7 @@ class _RepRowState extends State<_RepRow> {
                               Text(
                                 _isExpanded ? 'TAP TO COLLAPSE' : 'TAP TO INSPECT METRICS',
                                 style: GoogleFonts.outfit(
-                                  color: const Color(0xFF475569),
+                                  color: AppColors.textMuted,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -746,10 +747,10 @@ class _RepRowState extends State<_RepRow> {
                       ),
                       Text(
                         '${widget.rep.formScore.toStringAsFixed(0)}% PCT',
-                        style: GoogleFonts.outfit(
-                          color: Colors.white,
+                        style: GoogleFonts.barlowCondensed(
+                          color: AppColors.textPrimary,
                           fontWeight: FontWeight.w900,
-                          fontSize: 14,
+                          fontSize: 18,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -757,14 +758,14 @@ class _RepRowState extends State<_RepRow> {
                         _isExpanded
                             ? Icons.keyboard_arrow_up_rounded
                             : Icons.keyboard_arrow_down_rounded,
-                        color: const Color(0xFF64748B),
+                        color: AppColors.textMuted,
                         size: 20,
                       ),
                     ],
                   ),
                   if (_isExpanded) ...[
                     const SizedBox(height: 14),
-                    const Divider(color: Color(0xFF202B47), height: 1),
+                    const Divider(color: AppColors.surfaceBorder, height: 1),
                     const SizedBox(height: 14),
                     Row(
                       children: [
@@ -797,14 +798,14 @@ class _RepRowState extends State<_RepRow> {
                     ),
                     if (_imageExists && _imagePath != null) ...[
                       const SizedBox(height: 14),
-                      const Divider(color: Color(0xFF202B47), height: 1),
+                      const Divider(color: AppColors.surfaceBorder, height: 1),
                       const SizedBox(height: 14),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           'KINESIOLOGY ALARM SNAPSHOT:',
                           style: GoogleFonts.outfit(
-                            color: const Color(0xFFC9082A),
+                            color: AppColors.accentAlert,
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
@@ -813,11 +814,11 @@ class _RepRowState extends State<_RepRow> {
                       ),
                       const SizedBox(height: 8),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: const Color(0xFFC9082A).withValues(alpha: 0.5),
+                              color: AppColors.accentAlert.withValues(alpha: 0.5),
                               width: 1.5,
                             ),
                           ),
@@ -834,7 +835,7 @@ class _RepRowState extends State<_RepRow> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 14, vertical: 10),
-                                color: const Color(0xFFC9082A).withValues(alpha: 0.85),
+                                color: AppColors.accentAlert.withValues(alpha: 0.85),
                                 child: Row(
                                   children: [
                                     const Icon(
@@ -882,9 +883,9 @@ class _RepRowState extends State<_RepRow> {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFF090D1A),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF202B47), width: 0.8),
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: AppColors.surfaceBorder, width: 0.8),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -897,7 +898,7 @@ class _RepRowState extends State<_RepRow> {
                   child: Text(
                     label.toUpperCase(),
                     style: GoogleFonts.outfit(
-                      color: const Color(0xFF64748B),
+                      color: AppColors.textMuted,
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
                     ),
@@ -910,9 +911,9 @@ class _RepRowState extends State<_RepRow> {
             const SizedBox(height: 8),
             Text(
               value,
-              style: GoogleFonts.outfit(
-                color: Colors.white,
-                fontSize: 15,
+              style: GoogleFonts.barlowCondensed(
+                color: AppColors.textPrimary,
+                fontSize: 18,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -920,7 +921,7 @@ class _RepRowState extends State<_RepRow> {
             Text(
               subLabel,
               style: GoogleFonts.outfit(
-                color: const Color(0xFF475569),
+                color: AppColors.textMuted,
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
               ),
