@@ -116,11 +116,6 @@ class SkeletonPainter extends CustomPainter {
   Offset _landmarkToScreen(PoseLandmark landmark, Size canvasSize) {
     double x = landmark.x / imageSize.width * canvasSize.width;
     double y = landmark.y / imageSize.height * canvasSize.height;
-
-    // Mirror for front camera
-    if (isFrontCamera) {
-      x = canvasSize.width - x;
-    }
     return Offset(x, y);
   }
 

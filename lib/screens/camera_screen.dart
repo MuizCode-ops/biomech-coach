@@ -60,6 +60,14 @@ class _CameraScreenState extends State<CameraScreen>
   String? _lastFault;
   Timer? _faultClearTimer;
 
+  // ── Zoom (rear camera only) ───────────
+  double _currentZoom = 1.0;
+  double _baseZoom = 1.0;
+  double _minZoom = 1.0;
+  double _maxZoom = 1.0;
+  bool _showZoomIndicator = false;
+  Timer? _zoomIndicatorTimer;
+
   @override
   void initState() {
     super.initState();
@@ -138,6 +146,11 @@ class _CameraScreenState extends State<CameraScreen>
 
     await _cameraController!.initialize();
     if (!mounted) return;
+
+    // Fetch zoom range for this camera
+    _minZoom = await _cameraController!.getMinZoomLevel();
+    _maxZoom = await _cameraController!.getMaxZoomLevel();
+    _currentZoom = _minZoom;
 
     setState(() => _isCameraInitialized = true);
 
@@ -276,6 +289,7 @@ class _CameraScreenState extends State<CameraScreen>
   void _flipCamera() async {
     final next = (_selectedCameraIndex + 1) % _cameras.length;
     _selectedCameraIndex = next;
+    _currentZoom = 1.0; // Reset zoom on camera switch
     await _startCamera(next);
   }
 
@@ -296,6 +310,7 @@ class _CameraScreenState extends State<CameraScreen>
     _poseService.dispose();
     _ttsCoach.dispose();
     _faultClearTimer?.cancel();
+    _zoomIndicatorTimer?.cancel();
     super.dispose();
   }
 
@@ -329,6 +344,16 @@ class _CameraScreenState extends State<CameraScreen>
             ),
           // Right: rep counter
           Positioned(right: 16, top: 110, child: _buildRepCounter()),
+          // Zoom indicator (rear camera only)
+          if (_showZoomIndicator &&
+              _cameras.isNotEmpty &&
+              _cameras[_selectedCameraIndex].lensDirection == CameraLensDirection.back)
+            Positioned(
+              bottom: 100,
+              left: 0,
+              right: 0,
+              child: _buildZoomIndicator(),
+            ),
           // Bottom bar
           Positioned(bottom: 0, left: 0, right: 0, child: _buildBottomBar()),
         ],
@@ -359,7 +384,47 @@ class _CameraScreenState extends State<CameraScreen>
         child: CircularProgressIndicator(color: Color(0xFF2563EB)),
       );
     }
-    return CameraPreview(_cameraController!);
+    return GestureDetector(
+      onScaleStart: (details) {
+        _baseZoom = _currentZoom;
+      },
+      onScaleUpdate: (details) async {
+        final isRearCamera = _cameras[_selectedCameraIndex].lensDirection ==
+            CameraLensDirection.back;
+        if (!isRearCamera) return;
+        final newZoom =
+            (_baseZoom * details.scale).clamp(_minZoom, _maxZoom);
+        if ((newZoom - _currentZoom).abs() < 0.01) return;
+        _currentZoom = newZoom;
+        await _cameraController?.setZoomLevel(_currentZoom);
+        _zoomIndicatorTimer?.cancel();
+        _zoomIndicatorTimer = Timer(const Duration(milliseconds: 1500), () {
+          if (mounted) setState(() => _showZoomIndicator = false);
+        });
+        setState(() => _showZoomIndicator = true);
+      },
+      child: CameraPreview(_cameraController!),
+    );
+  }
+
+  Widget _buildZoomIndicator() {
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.55),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          '${_currentZoom.toStringAsFixed(1)}x',
+          style: GoogleFonts.outfit(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildSkeleton() {
