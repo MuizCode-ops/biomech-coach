@@ -1,0 +1,141 @@
+[Normal] UNIVERSITI TEKNIKAL MALAYSIA MELAKA
+[Normal] This report is submitted in partial fulfillment of the requirements for the
+[Normal] Bachelor of [Computer Science
+[Cover Title] FACULTY OF ARTIFICIAL INTELLIGENCE AND CYBER SECURITY UNIVERSITI TEKNIKAL MALAYSIA MELAKA
+[Heading 1] DEDICATION
+[Normal] [To my beloved parents...]
+[Heading 1] ACKNOWLEDGEMENTS
+[Normal] [I would like to thank En. Muhammad bin Ahmad for giving assistant to complete this project successfully…...
+[Normal] I would also like to thank my beloved parents who have been giving me support and motivation throughout my project…]
+[Heading 1] ABSTRACT
+[Normal] [Abstract must start from here. Abstracts should be concise, WRITTEN IN ONE SPACING and justification and NOT MORE THAN 300 WORDS IN A SINGLE PAGE. Abstract is not the same as synopsis or report summary. Abstracts are WRITTEN WITH ONE PARAGRAPH. It should briefly state the field of report studies, problems to be solved, solutions, research processes; and the results obtained.]
+[Heading 1] ABSTRAK
+[Normal] [Abstrak mesti bermula disini. Abstrak mestilah ringkas, DITULIS DALAM SATU LANGKAU dan justifikasi TIDAK LEBIH DARIPADA 300 PERKATAAN DALAM SATU MUKASURAT sahaja. Abstrak tidak sama dengan sinopsis atau ringkasan tesis. Abstrak DITULIS DALAM SATU PERENGGAN. Ia hendaklah menyatakan dengan ringkas bidang kajian tesis, masalah yang hendak diselesaikan, cara penyelesaian, proses penyelidikan; dan keputusan yang diperolehi.]
+[Heading 1] table of contents
+[toc 1] DECLARATION	ii
+[toc 1] DEDICATION	iii
+[toc 1] ACKNOWLEDGEMENTS	iv
+[toc 1] ABSTRACT	v
+[toc 1] ABSTRAK	vi
+[toc 1] table of contents	vii
+[toc 1] list of tables	ix
+[toc 1] list of figures	x
+[toc 1] List of Abbreviations	xi
+[toc 1] List of ATTACHMENTS	xii
+[toc 1] Chapter 1: INTRODUCTION	1
+[toc 2] 1.1	About Chapters and First Subtitle	1
+[toc 3] 1.1.1	Second Subtitles	2
+[toc 4] 1.1.1.1	Third Subtitles	2
+[toc 1] Chapter 2: literature review AND PROJECT METHODOLOGY 3
+[toc 2] 2.1	About Figures	3
+[toc 1] Chapter 3: REQUIREMENT ANALYSIS	5
+[toc 2] 3.1	About Tables	5
+[toc 1] Chapter 4: DESIGN	7
+[toc 2] 4.1	About Table of Content	7
+[toc 1] Chapter 5: RESULTS AND DISCUSSION	9
+[toc 2] 5.1	About List of Tables	9
+[toc 2] 5.2	About List of Figures	9
+[toc 2] 5.3	About List of Figures	9
+[toc 2] 5.4	About List of Figures	9
+[toc 2] 5.5	About List of Figures	10
+[toc 1] Chapter 6: CONCLUSION	11
+[toc 2] 6.1	Wrap-Up	11
+[toc 1] references	12
+[toc 1] APPENDICES	13
+[Heading 1] list of tables
+[table of figures] Table 3.1: Table Example	5
+[Heading 1] list of figures
+[table of figures] Figure 2.1: Caption Window	3
+[table of figures] Figure 2.2:  Caption Numbering Window	4
+[table of figures] Figure 2.3: Example Figure with citation from a book  (Pike, 2008. Used with permission)	4
+[table of figures] Figure 4.1: How to update Table of Contents in this template	7
+[table of figures] Figure 4.2: Updating the whole list	7
+[Heading 1] List of Abbreviations
+[Heading 1] List of ATTACHMENTS
+[Heading 1] INTRODUCTION
+[Body Text 2] This template is intended to assist students in writing their FYP reports, by referring to the report structure for BAXI program. You should change accordingly to your program as stated in the guidelines. Any changes of the structure can still be made depending on your supervisor's consent.
+[Body Text 2] Students are advised not to change any of the templates formatting and style since this template was built based on the FYP writing guide.
+[Body Text 2] For the body of the text, students must use “Body Text 2” style in the “Styles” window under Home tab.
+[Heading 2] About Chapters and First Subtitle
+[Body Text 2] For each chapter, type in the name of the chapter (e.g. Introduction) and apply “Heading 1” style.  The style will automatically add numbering starting with ‘Chapter’ in front of the numbering.
+[Body Text 2] Create three empty lines before each chapter name.  After each chapter name, leave four empty lines for the new paragraph.  Use “Body Text” style for the empty lines before and after the chapter names only.  For the rest of the normal paragraph, use “Body Text 2” style, as indicated earlier.  For next or new chapter, student must start on a new page.
+[Body Text 2] For the first subtopic in each chapter, student can use Heading 2 style for the title.  Do not leave any empty line before starting a new subtitle.
+[Heading 3] Second Subtitles
+[Body Text 2] For the second subtopic of each chapter, students can choose “Heading 3” style accordingly.  Do not leave any empty line before starting a new subtitle.
+[Heading 4] Third Subtitles
+[Body Text 2] For the second subtopic of each chapter, students can choose “Heading 4” style accordingly.  Do not leave any empty line before starting a new subtitle.
+[Heading 5] Other Subtitles
+[Body Text 2] For other subtopics in each chapter use “Heading 5” style for title, with numbering (a), (b), and so on.
+[Heading 1] literature review AND PROJECT METHODOLOGY
+[Heading 2] About Figures
+[Body Text 2] Figures are printed within the body of the text at the center of the page and labelled according to the chapter in which they appear. Thus, for example, figures in Chapter 2 are numbered sequentially: Figure 2.1, Figure 2.2.
+[Body Text 2] Figures contain graphs, illustrations or photographs and their labels are placed at the bottom of the figure.  To insert label below a figure, click “Insert Caption” under the “References” tab and select “Figure” in the dropdown list as shown in Figure 2.1.
+[Caption] Figure 2.: Caption Window
+[Body Text 2] Click on “Numbering” and tick the “Include chapter number” and select “period (.)” as separator, as shown in Figure 2.2. Click “Update Table” to update the List of Figures.
+[Caption] Figure 2.:  Caption Numbering Window
+[Body Text 2] If the figure contains a citation, the source of the reference should be placed at the bottom, after the label.
+[Caption] Figure 2.: Example Figure with citation from a book 
+(Pike, 2008. Used with permission)
+[Heading 1] REQUIREMENT ANALYSIS
+[Heading 2] About Tables
+[Body Text 2] Tables are printed within the body of the text at the center of the frame and labeled according to the chapter in which they appear. Thus, for example, tables in Chapter 3 are numbered sequentially: Table 3.1, Table 3.2.  The label should be placed above the table itself and has the format shown in Table 3.1.  Any text inside a table must follow “Table Text” style.
+[Caption] Table 3.: Table Example
+[Body Text 2] To insert label above a table, click “Insert Caption” under the “References” tab and select “Table” in the dropdown list, as shown in Figure 2.1. Click on “Numbering” and tick the “Include chapter number” and select “period (.)” as separator, as shown in Figure 2.2. When done, click “Update Table” to update the List of Tables.
+[Body Text 2] If the table contains a citation, the source of the reference should be placed below the table.
+[Body Text 2] To insert label above a table, click “Insert Caption” under the “References” tab and select “Table” in the dropdown list, as shown in Figure 2.1. Click on “Numbering” and tick the “Include chapter number” and select “period (.)” as separator, as shown in Figure 2.2. When done, click “Update Table” to update the List of Tables.
+[Body Text 2] If the table contains a citation, the source of the reference should be placed below the table
+[Heading 1] DESIGN
+[Heading 2] About Table of Content
+[Body Text 2] In this template, the table of contents rely on the use of styles to format chapter headings and subtitles and generates the table of content automatically.  To generate the table of content in this template, place the cursor on the current table of content.  Next, go to “References” tab and click on the “Update Table” icon, as shown in Figure 4.1.
+[Caption] Figure 4.: How to update Table of Contents in this template
+[Body Text 2] In the “Update Table of Contents” window, choose option “Update the entire table” and click OK.  Microsoft Word will generate a new table of contents based on the student’s updates.
+[Caption] Figure 4.: Updating the whole list
+[Normal] In the “Update Table of Contents” window, choose option “Update the entire table” and click OK.  Microsoft Word will generate a new table of contents based on the student’s
+[Heading 1] RESULTS AND DISCUSSION
+[Heading 2] About List of Tables
+[Body Text 2] To update List of Tables, place the cursor on the list that needs to be updated.  Similar to the Table of Content, click on the icon “Update Table” under References tab to list down the updates, as shown in Figure 4.1
+[Heading 2] About List of Figures
+[Body Text 2] To update List of Figures, place the cursor on the list that needs to be updated.  Next, click on the icon “Update Table” under References tab to list down the updates, as shown in Figure 4.1.
+[Heading 2] About List of Figures
+[Body Text 2] To update List of Figures, place the cursor on the list that needs to be updated.  Next, click on the icon “Update Table” under References tab to list down the updates, as shown in Figure 4.1.
+[Heading 2] About List of Figures
+[Body Text 2] To update List of Figures, place the cursor on the list that needs to be updated.  Next, click on the icon “Update Table” under References tab to list down the updates, as shown in Figure 4.1.
+[Heading 2] About List of Figures
+[Body Text 2] To update List of Figures, place the cursor on the list that needs to be updated.  Next, click on the icon “Update Table” under References tab to list down the updates, as shown in Figure 4.1.
+[Heading 1] CONCLUSION
+[Heading 2] Wrap-Up
+[Body Text 2] Please enjoy writing your FYP
+[Heading 1] references
+[Body Text 3] Buchwalow, I. B., and Böcker, W. (2010). Immunohistochemistry: basics and methods. Berlin: Springer Verlag.
+[Body Text 3] Caamaño-Tubío, R. I., Pérez, J., Ferreiro, S., and Aldegunde, M. (2007). Peripheral serotonin dynamics in the rainbow trout (Oncorhynchus mykiss) Comparative Biochemistry and Physiology Part C: Toxicology & Pharmacology. 145(2): 245-255.
+[Body Text 3] Cameron, A. A., Plenderleith, M. B. and Snow, P. J. (1990). Organization of the spinal cord in four species of elasmobranch fishes: cytoarchitecture and distribution of serotonin and selected neuropeptides. The Journal of Comparative Neurology. 297: 201-218.
+[Body Text 3] Desa, M.I (1995).  Bus fleet maintenance modeling in a developing country. Ph.D Thesis, University of Salford.
+[Body Text 3] Improve indigenous housing now, government told, 2007. accessed 8 February 2009, <http://www.architecture.com.au/i-cms?page=10220>.
+[Body Text 3] International  Narcotics  Control  Board  1999,  United  Nations,  accessed  1  October  1999, <http://www.incb.org>.
+[Body Text 3] Theusen, G. J. and Fabrycky, W. J. (1984). Engineering Economy. 6th. Ed. Englewood Cliffs, N. J.: Prentice Hall. 150-178.
+[Heading 1] APPENDICES
+
+--- Table 1 ---
+ | PAGE
+
+--- Table 2 ---
+ | PAGE
+
+--- Table 3 ---
+ | PAGE
+
+--- Table 4 ---
+FYP | - | Final Year Project
+
+--- Table 5 ---
+ |  |  | PAGE
+ |  |  | 
+Appendix A |  | Sample of data | 19
+Appendix B |  | Analysis of data collection | 78
+…….. |  | ………… | 
+…….. |  | ………… | 
+ |  |  | 
+
+--- Table 6 ---
+Column Name | Column Name
+Text | Text
